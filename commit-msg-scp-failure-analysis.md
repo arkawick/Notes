@@ -19,8 +19,15 @@ SCP/RCP protocol. Gerrit's built-in SSH server **does not provide an SFTP
 subsystem**, so the transfer is rejected.
 
 **Fix:** add the `-O` flag to the failing `scp` command to force the legacy SCP
-protocol. One-line change in
-`platform/vendor/semc/build : semcsystem/misc/scriptutils.source`.
+protocol. One-line change in the **`semctools/semcsystem`** repo, file
+`misc/scriptutils.source` (checked out on disk at
+`vendor/semc/build/semcsystem/misc/scriptutils.source`).
+
+> **Repo-name correction:** an earlier version of this doc named the repo
+> `platform/vendor/semc/build` — that was inferred from the on-disk *path* and is
+> wrong. The `semcsystem/` segment of `vendor/semc/build/semcsystem/…` is the
+> **mount point of the `semctools/semcsystem` repo**, which is a separate project
+> nested under `platform/vendor/semc/build`. See §5.2.
 
 ---
 
@@ -161,10 +168,10 @@ a `grep` of the manifest):
 
 | Project | On this branch? | Action |
 |---|---|---|
-| `semctools/semcsystem` | ✅ | synced |
+| `semctools/semcsystem` | ✅ | **synced — provides `run-offbuild-collect.sh` + `scriptutils.source`** (mounted at `vendor/semc/build/semcsystem/`) |
 | `platform/build` | ✅ | synced |
 | `platform/vendor/semc/api` | ✅ | synced |
-| `platform/vendor/semc/build` | ✅ | **synced — provides `run-offbuild-collect.sh` + `scriptutils.source`** |
+| `platform/vendor/semc/build` | ✅ | synced — parent tree (mounted at `vendor/semc/build/`) |
 | `platform/vendor/semc/build/project` | ❌ | skipped ("does not exist on manifest branch") |
 | `platform/vendor/semc/customization/nfc/common` | ❌ | skipped |
 | `platform/vendor/semc/products/qssi` | ✅ | synced |
@@ -216,10 +223,10 @@ job ends `FAILURE`.
 |---|---|---|---|---|
 | 1 | `semctools/offbuild` | `git clone` → `.offbuild` | `origin/master` | the offbuild build scripts (init/post-*/collect) |
 | 2 | `platform/qssimanifest` | `repo init` | `feature-a16-chikugo-ubuntu24-test` @ `d58409959…` | the repo manifest |
-| 2a | `semctools/semcsystem` | `repo sync -c` | per manifest | build metadata inputs |
+| 2a | `semctools/semcsystem` | `repo sync -c` | per manifest | **holds `run-offbuild-collect.sh` + `scriptutils.source`** (path `vendor/semc/build/semcsystem/`) |
 | 2b | `platform/build` | `repo sync -c` | per manifest | build metadata inputs |
 | 2c | `platform/vendor/semc/api` | `repo sync -c` | per manifest | build metadata inputs |
-| 2d | `platform/vendor/semc/build` | `repo sync -c` | per manifest | **holds `run-offbuild-collect.sh` + `scriptutils.source`** |
+| 2d | `platform/vendor/semc/build` | `repo sync -c` | per manifest | parent tree (path `vendor/semc/build/`) |
 | 2e | `platform/vendor/semc/products/qssi` | `repo sync -c` | per manifest | product data |
 | 3 | `platform/vendor/semc/build/android-qssi-packages` | `git clone` → `delivery-git` | `feature-a16-chikugo-ubuntu24-test` | delivery git: records the built label, pushed to Gerrit |
 
@@ -315,8 +322,22 @@ Jenkins job step
 
 ### 5.2 The file and function
 
-**File:** `semcsystem/misc/scriptutils.source`
-**Repo:** `platform/vendor/semc/build`
+The on-disk path `vendor/semc/build/semcsystem/misc/scriptutils.source` is **two
+nested repos**. The offbuild `collect.sh` proves it — its `SYNC_PROJECTS` lists
+both as separate projects:
+
+| Git project (`name=` in manifest) | Checked out at (`path=`) |
+|---|---|
+| `platform/vendor/semc/build` | `vendor/semc/build/` |
+| **`semctools/semcsystem`** | **`vendor/semc/build/semcsystem/`** |
+
+So the `semcsystem/` segment is **the mount point of the `semctools/semcsystem`
+repo** — *not* a subfolder of `platform/vendor/semc/build`. Inside the
+`semctools/semcsystem` repo, the file is simply `misc/scriptutils.source`.
+
+**Repo:** `semctools/semcsystem`
+**File (in repo):** `misc/scriptutils.source`
+**On disk:** `vendor/semc/build/semcsystem/misc/scriptutils.source`
 **Function:** `get_delivery_git()`
 
 ```sh
@@ -384,23 +405,24 @@ approach Gerrit itself documents.
 
 | | |
 |---|---|
-| **Repo** | `platform/vendor/semc/build` |
-| **File** | `semcsystem/misc/scriptutils.source` |
+| **Repo** | `semctools/semcsystem` |
+| **File** | `misc/scriptutils.source` |
 | **Function** | `get_delivery_git()` |
-| **Branch** | The revision pinned by the `feature-a16-chikugo-ubuntu24-test` static manifest for `platform/vendor/semc/build` |
+| **Branch** | The revision pinned by the `feature-a16-chikugo-ubuntu24-test` static manifest for `semctools/semcsystem` |
 
 To find the exact revision/branch to fix, on the build node (or from archived
 artifacts):
 
 ```sh
-grep 'name="platform/vendor/semc/build"' result-dir/manifest_static.xml
+grep 'name="semctools/semcsystem"' result-dir/manifest_static.xml
 # or, since repo already synced it into the workspace:
-git -C vendor/semc/build rev-parse --abbrev-ref HEAD
-git -C vendor/semc/build log -1
+git -C vendor/semc/build/semcsystem remote -v          # confirms semctools/semcsystem
+git -C vendor/semc/build/semcsystem rev-parse --abbrev-ref HEAD
+git -C vendor/semc/build/semcsystem log -1
 ```
 
-Push the change there, get it merged, and the next offbuild run on that branch
-picks it up automatically via `repo sync`.
+Push the change to `semctools/semcsystem`, get it merged, and the next offbuild
+run on that branch picks it up automatically via `repo sync`.
 
 ---
 
@@ -410,9 +432,9 @@ The scripts under `offbuild/` and `cm_tools/` in the workspace are **not** what
 runs at the failing step:
 
 - `run-offbuild-collect.sh` and `scriptutils.source` are **synced at build
-  time** from the `platform/vendor/semc/build` git via `repo sync`. They are
-  **not present in the offbuild repo checkout**, so editing anything in
-  `offbuild/` cannot change this failure.
+  time** from the `semctools/semcsystem` git via `repo sync` (mounted at
+  `vendor/semc/build/semcsystem/`). They are **not present in the offbuild repo
+  checkout**, so editing anything in `offbuild/` cannot change this failure.
 - The workspace is wiped (`rm -rf`) at the start of every build, so editing the
   file on the node directly is pointless — it must be fixed **in git**.
 
@@ -427,9 +449,15 @@ The same `scp … :hooks/commit-msg` pattern **without `-O`** exists elsewhere a
 will break identically on any Ubuntu 24 node. Fix these too if the corresponding
 jobs migrate to ubuntu24:
 
+> ⚠️ The repo names below are inferred from on-disk paths and have **not** been
+> verified against the manifest `name=` attribute. The first row is corrected
+> (`semctools/semcsystem`); re-check the others the same way before trusting them
+> — a path like `vendor/semc/build/…` may belong to a nested project, not
+> `platform/vendor/semc/build`.
+
 | Repo / file | Line |
 |---|---|
-| `platform/vendor/semc/build` → `semcsystem/misc/scriptutils.source` | `get_delivery_git()` — **this failure** |
+| `semctools/semcsystem` → `misc/scriptutils.source` (path `vendor/semc/build/semcsystem/`) | `get_delivery_git()` — **this failure** |
 | `offbuild/offbuild/amss/master/post-matrix.sh` | 62 |
 | `offbuild/offbuild/ch/ramdump/common_functions.sh` | 145 |
 | `cm_tools/binary_build/binary_file_updater.bash` | 135 |
@@ -455,5 +483,5 @@ jobs migrate to ubuntu24:
 > Ubuntu 24 ships OpenSSH 9.x, whose `scp` defaults to the SFTP protocol. Gerrit
 > has no SFTP subsystem, so `scp user@gerrit:hooks/commit-msg …` fails with
 > "subsystem request failed on channel 0" (exit 255). Add `scp -O` (legacy
-> protocol) in `get_delivery_git()` in
-> `platform/vendor/semc/build:semcsystem/misc/scriptutils.source`.
+> protocol) in `get_delivery_git()` in **`semctools/semcsystem`** →
+> `misc/scriptutils.source` (on disk `vendor/semc/build/semcsystem/misc/scriptutils.source`).
