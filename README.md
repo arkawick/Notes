@@ -1,6 +1,6 @@
-# CMWEB
+# uyfyfl
 
-CMWEB is Sony Mobile's internal **Configuration Management** web application. It indexes Android
+**Configuration Management** web application. It indexes Android
 platform build metadata out of Gerrit, git and repo manifests — repositories, manifest branches, builds
 ("labels"), commits and issues — and layers release-engineering workflow on top of it: branch and
 repository requests, automated cherry-picking, rebase tracking, vendor release synchronisation and
