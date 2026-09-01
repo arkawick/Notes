@@ -19,6 +19,12 @@ This produces `site/` (= `cmweb-project`) with `site/apps/` (= `cmweb-app`) insi
 
 > This document supersedes `cmweb-project/README.rst`, whose content has been merged here.
 
+> **No access to Sony's internal package index or Gerrit?** `local-cmweb/` runs
+> the application on a plain workstation against the checked-in sample dataset,
+> using shims for the internal packages. See
+> [local-cmweb/README.md](../local-cmweb/README.md). The rest of this document
+> describes the real development environment.
+
 ## Environment setup
 
 ```bash
