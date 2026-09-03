@@ -82,6 +82,7 @@ Neither is urgent; both are worth knowing before they confuse someone.
 
 ## Related documents
 
+- [how-the-site-works.md](how-the-site-works.md) — end to end: one request from browser to PostgreSQL, and how the server gets built
 - [architecture.md](architecture.md) — the domain model and indexing pipeline
 - [development.md](development.md) — setup, build, test, lint, review flow
 - [infrastructure.md](infrastructure.md) — AWS topology and the Jenkins jobs

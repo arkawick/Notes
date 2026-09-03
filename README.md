@@ -1,6 +1,6 @@
-# uyfyfl
+# CMWEB
 
-**Configuration Management** web application. It indexes Android
+CMWEB is Sony Mobile's internal **Configuration Management** web application. It indexes Android
 platform build metadata out of Gerrit, git and repo manifests — repositories, manifest branches, builds
 ("labels"), commits and issues — and layers release-engineering workflow on top of it: branch and
 repository requests, automated cherry-picking, rebase tracking, vendor release synchronisation and
@@ -64,9 +64,12 @@ Everything in `settings.py` is derived from that layout: `PATH_PROJECT` → `sit
 
 | Document | Contents |
 | --- | --- |
+| [docs/how-the-site-works.md](docs/how-the-site-works.md) | **End to end** — one request from browser to PostgreSQL, and how EC2, Apache, Django, RDS and Ansible fit together |
 | [docs/architecture.md](docs/architecture.md) | The domain model, how indexing works, the app catalogue, request/response mechanics |
 | [docs/development.md](docs/development.md) | Local setup, build/test/lint commands, code conventions, the Gerrit review flow |
+| [docs/internals.md](docs/internals.md) | **Start here if you are new to Django** — index to eight deep-dive guides: apps, management commands, views, middleware, Celery, migrations, Apache, Ansible |
 | [docs/infrastructure.md](docs/infrastructure.md) | `cmweb-scripts`: AWS topology, Ansible deployment, Jenkins jobs, git mirroring |
+| [local-cmweb/README.md](local-cmweb/README.md) | Running the app on a local machine against the sample dataset |
 
 `cmweb-project/README.rst` is the original upstream setup guide. Its content has been folded into
 [docs/development.md](docs/development.md), corrected where it had gone stale, and it is now redundant.

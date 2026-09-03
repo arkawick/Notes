@@ -146,9 +146,13 @@ policies) subclass `schedule.models.BranchPeriod`, as does `issues.TagPeriod` an
 
 ### Async and search
 
-Celery (`cmweb/celery.py`, SQS broker, `django_celery_results` backend) with `@shared_task` modules per
-app; `CELERY_TASK_ALWAYS_EAGER = True` in base settings so dev runs inline. `backend.tasks.json_result`
-serializes Django objects out of tasks, and `backend.UserTaskRequest` tracks user-initiated jobs. Search is
-OpenSearch via `django-opensearch-dsl` `documents.py` files, with `OPENSEARCH_DSL_AUTOSYNC = False` — the
-index is refreshed by the `update_search_index` Jenkins job through
-`search.search_signals.CustomSignalProcessor`, not on save.
+Celery (`cmweb/celery.py`, `@shared_task` modules per app, `django_celery_results` in `INSTALLED_APPS`)
+is wired up but **has no broker and no worker in any deployed environment**. `CELERY_TASK_ALWAYS_EAGER =
+True` is set in base `settings.py` and is never overridden by `settings_prod/stage/test.py`; no broker URL
+is configured anywhere, including the Ansible-rendered `secure.py`; no Ansible role installs or starts a
+worker; and `cmweb-scripts/bin/run_commands.sh` re-asserts eager mode for Jenkins runs. Every `.delay()`
+therefore runs inline and synchronously in the calling thread — a slow task is a slow page, and there is
+no queue to inspect. `backend.tasks.json_result` serializes Django objects out of tasks, and
+`backend.UserTaskRequest` tracks user-initiated jobs. Search is OpenSearch via `django-opensearch-dsl`
+`documents.py` files, with `OPENSEARCH_DSL_AUTOSYNC = False` — the index is refreshed by the
+`update_search_index` Jenkins job through `search.search_signals.CustomSignalProcessor`, not on save.
