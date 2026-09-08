@@ -1,0 +1,189 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&apos;Job for getting a diff of two systems and their included components on a source code level.&lt;br&gt;&apos;
+&apos;One set of reports is created based on a diff of all included projects.&lt;br&gt;&apos;
+&apos;One additional set of reports is optionally created where specified projects are excluded from the diff.&apos;
+&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>SYSTEM_LABEL_1</name>
+          <description>[Mandatory] First system label, e.g. &apos;64.1.A.1.371&apos;.
+</description>
+          <defaultValue></defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SYSTEM_LABEL_2</name>
+          <description>[Mandatory] Second system label, e.g. &apos;64.1.A.0.859&apos;.
+</description>
+          <defaultValue></defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>EXCLUDE_PROJECTS</name>
+          <description>[Optional] Space separated names of project to exclude from the diff
+</description>
+          <defaultValue>platform/vendor/semc/build/system-snapshot platform/vendor/semc/build/android-qssi-packages platform/vendor/semc/build/android-target-packages platform/vendor/semc/build/pld-packages</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>CM</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -ex
+if [ -e $HOME/.netrc ]; then
+   rm -rf $HOME/.netrc
+fi
+cat $NETRC_FILE &gt;&gt; $HOME/.netrc
+cat $NETRC_JK_FILE &gt;&gt; $HOME/.netrc
+
+chmod og-rw $HOME/.netrc
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -ex
+
+# If the cm_tools git exists, make sure it&apos;s up to date.  If it
+# does not exist yet, clone it.
+if [ -d cm_tools ] ; then
+    ( cd cm_tools &amp;&amp; git fetch &amp;&amp; git checkout origin/master )
+else
+    git clone git://review.ptc.sony.co.jp/semctools/cm_tools -b master
+fi
+
+cm_tools/hudson-scripts/system-diff.sh
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.39">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.FileBuildParameters>
+              <propertiesFile>$PROPERTIES_FILE</propertiesFile>
+              <failTriggerOnMissing>true</failTriggerOnMissing>
+              <textParamValueOnNewLine>false</textParamValueOnNewLine>
+              <useMatrixChild>false</useMatrixChild>
+              <onlyExactRuns>false</onlyExactRuns>
+            </hudson.plugins.parameterizedtrigger.FileBuildParameters>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>EXCLUDE_PROJECTS=$EXCLUDE_PROJECTS
+</properties>
+              <textParamValueOnNewLine>false</textParamValueOnNewLine>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>system_diff_matrix</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <triggerFromChildProjects>false</triggerFromChildProjects>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -ex
+
+eval MATRIX_BUILD_NUMBER=\$TRIGGERED_BUILD_NUMBER_system_diff_matrix
+echo &quot;MATRIX_BUILD_NUMBER=${MATRIX_BUILD_NUMBER}&quot; &gt;&gt; $PROPERTIES_FILE
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <EnvInjectBuilder plugin="envinject@2.3.0">
+      <info>
+        <propertiesFilePath>$PROPERTIES_FILE</propertiesFilePath>
+      </info>
+    </EnvInjectBuilder>
+    <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.46">
+      <project>system_diff_matrix</project>
+      <parameters></parameters>
+      <filter>result-dir/*.txt</filter>
+      <target>result-dir</target>
+      <selector class="hudson.plugins.copyartifact.SpecificBuildSelector">
+        <buildNumber>$MATRIX_BUILD_NUMBER</buildNumber>
+      </selector>
+      <flatten>true</flatten>
+      <optional>false</optional>
+      <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
+      <resultVariableSuffix></resultVariableSuffix>
+    </hudson.plugins.copyartifact.CopyArtifact>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -ex
+
+cm_tools/hudson-scripts/system-diff-collect.sh
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>result-dir/*.html,result-dir/diff/*</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>true</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.39">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+      <disableDeferredWipeout>false</disableDeferredWipeout>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.24">
+      <bindings>
+        <org.jenkinsci.plugins.credentialsbinding.impl.FileBinding>
+          <credentialsId>netrc-file-for-cm-to-add</credentialsId>
+          <variable>NETRC_FILE</variable>
+        </org.jenkinsci.plugins.credentialsbinding.impl.FileBinding>
+        <org.jenkinsci.plugins.credentialsbinding.impl.FileBinding>
+          <credentialsId>4e50d164-f2e7-4dd3-8a05-3c754f75737e</credentialsId>
+          <variable>NETRC_JK_FILE</variable>
+        </org.jenkinsci.plugins.credentialsbinding.impl.FileBinding>
+      </bindings>
+    </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
+    <EnvInjectBuildWrapper plugin="envinject@2.3.0">
+      <info>
+        <propertiesContent>PROPERTIES_FILE=properties.txt
+</propertiesContent>
+        <loadFilesFromMaster>false</loadFilesFromMaster>
+      </info>
+    </EnvInjectBuildWrapper>
+  </buildWrappers>
+</project>

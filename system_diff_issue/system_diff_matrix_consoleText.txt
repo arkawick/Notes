@@ -1,0 +1,1132 @@
+Started by upstream project "system_diff_matrix" build number 23
+originally caused by:
+ Started by upstream project "system_diff" build number 23
+ originally caused by:
+  Started by user Omprakash, Ambika (SEC)
+  Started by upstream project "system_diff" build number 20
+  originally caused by:
+   Started by user Singh, Anupam (SEC)
+Running as SYSTEM
+[EnvInject] - Loading node environment variables.
+Building remotely on EC2 (AWSJ2) - ci-cm_CM_UTIL (i-065bb338e5c803c5b) (CM_UTIL) in workspace /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[6f74d4e1] $ /bin/bash -ex /tmp/jenkins13132746946197433559.sh
++ '[' -e /home/hudsonslave/.netrc ']'
++ cat ****
++ cat ****
++ chmod og-rw /home/hudsonslave/.netrc
+[6f74d4e1] $ /bin/bash -ex /tmp/jenkins1062789102918605801.sh
++ '[' -d cm_tools ']'
++ git clone git://review.ptc.sony.co.jp/semctools/cm_tools -b master
+Cloning into 'cm_tools'...
+Total 18719 (delta 8618), reused 16217 (delta 8618)
++ cm_tools/hudson-scripts/system-diff-matrix.sh
++ mkdir result-dir
++ input=($(echo $DIFF_INPUT | tr '|' ' '))
+++ echo 'build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745'
+++ tr '|' ' '
++ build_metadata_pkg_name=build-metadata-amss-chikugo-r1
++ build_metadata_pkg_ver_1=CHIKUGO-1.0.0-260519-1720
++ build_metadata_pkg_ver_2=CHIKUGO-1.0.0-REL-260520-0745
+++ repository getpackage build-metadata-amss-chikugo-r1 CHIKUGO-1.0.0-260519-1720
++ deb_pkg_file_path_1=/home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-260519-1720_all.deb
+++ repository getpackage build-metadata-amss-chikugo-r1 CHIKUGO-1.0.0-REL-260520-0745
++ deb_pkg_file_path_2=/home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-REL-260520-0745_all.deb
++ dpkg-deb -I /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-260519-1720_all.deb
++ dpkg-deb -I /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-REL-260520-0745_all.deb
+++ cat metadata_1.txt
+++ grep XB-SONY-Component-Name:
+++ cut -d : -f2
+++ tr -d ' '
++ component_name=amss
+++ cat metadata_1.txt
+++ grep XB-SONY-Component-Manifest-Git:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_git=platform/amssmanifest
+++ cat metadata_1.txt
+++ grep XB-SONY-Component-Manifest-Branch:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_branch=chikugo-1.0.0
+++ cat metadata_1.txt
+++ grep XB-SONY-Component-Manifest-Static-Path:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_static_path_1=static_manifest.xml
+++ cat metadata_2.txt
+++ grep XB-SONY-Component-Manifest-Static-Path:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_static_path_2=static_manifest.xml
+++ cat metadata_1.txt
+++ grep XB-SONY-Component-Manifest-Revision:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_static_revision_1=590cad95870611424e143bac66485b45daae636b
+++ cat metadata_2.txt
+++ grep XB-SONY-Component-Manifest-Revision:
+++ cut -d : -f2
+++ tr -d ' '
++ manifest_static_revision_2=584f98c9f35a8bb4808f780e645042e8832ee064
++ dpkg --fsys-tarfile /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-260519-1720_all.deb
++ tar xOf - ./static_manifest.xml
++ dpkg --fsys-tarfile /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/./build-metadata-amss-chikugo-r1_CHIKUGO-1.0.0-REL-260520-0745_all.deb
++ tar xOf - ./static_manifest.xml
++ repo init -u git://review.ptc.sony.co.jp/platform/amssmanifest -b chikugo-1.0.0 '--reference={repo-mirror-location}'
+
+repo has been initialized in /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
++ cp manifest_static_1.xml .repo/manifests/.
++ cp manifest_static_2.xml .repo/manifests/.
++ repo init -m manifest_static_1.xml
+repo: reusing existing repo client checkout in /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
+
+repo has been initialized in /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
++ repo sync
+repo sync has finished successfully.
++ repo init -m manifest_static_2.xml
+repo: reusing existing repo client checkout in /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
+
+repo has been initialized in /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1
++ echo 'Diff of amss CHIKUGO-1.0.0-260519-1720 and CHIKUGO-1.0.0-REL-260520-0745'
++ cd .repo/manifests
+++ git diff 590cad95870611424e143bac66485b45daae636b..584f98c9f35a8bb4808f780e645042e8832ee064
++ manifest_diff='diff --git a/cm_decisive_systems.json b/cm_decisive_systems.json
+index c33250d4b..69f33a2bc 100644
+--- a/cm_decisive_systems.json
++++ b/cm_decisive_systems.json
+@@ -1,3 +1,3 @@
+ [
+-    "chikugo-1.0.0"
++    "chikugo-1.0.0-rel"
+ ]
+\ No newline at end of file
+diff --git a/default.xml b/default.xml
+index 18f652562..722c88e8f 100644
+--- a/default.xml
++++ b/default.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="chikugo-1.0.0"/>
++  <default remote="origin" revision="chikugo-1.0.0-rel"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" groups="vendor,specific">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0-rel" groups="somc,common"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/component-version b/upstreams/xperia/component-version
+index c3917ea48..49d25c74c 100644
+--- a/upstreams/xperia/component-version
++++ b/upstreams/xperia/component-version
+@@ -1 +1 @@
+-A16-CHIKUGO-SM8850-LA1.0-260306-0655
++CHIKUGO-1.0.0-260519-1720
+diff --git a/upstreams/xperia/manifest-revision b/upstreams/xperia/manifest-revision
+index 9fbec4ff9..e26a94fa8 100644
+--- a/upstreams/xperia/manifest-revision
++++ b/upstreams/xperia/manifest-revision
+@@ -1 +1 @@
+-8723382cf8e1582c5189260fac65de2dc96d5a4c
++590cad95870611424e143bac66485b45daae636b
+diff --git a/upstreams/xperia/original-manifest.xml b/upstreams/xperia/original-manifest.xml
+index 972bf9563..18f652562 100644
+--- a/upstreams/xperia/original-manifest.xml
++++ b/upstreams/xperia/original-manifest.xml
+@@ -3,20 +3,20 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
+-  <project name="platform/amss-build" path="build" revision="master-v4" groups="somc,common">
++  <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+-  <project name="platform/amss-config" path="config" groups="somc,specific"/>
+-  <project name="platform/amss-ta" path="sony/ta" revision="master-v3" groups="somc,common"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
++  <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+   <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
+-  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" groups="vendor,specific"/>
++  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" groups="vendor,specific"/>
++  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+@@ -26,30 +26,30 @@
+   <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+   <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+   <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
+-  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" groups="vendor,specific"/>
++  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" groups="vendor,specific"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="a16-common-2" groups="somc,common"/>
+-  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="a16-common-2" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+-  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="common-chikugo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="common-shimanto" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="qct-qtee5.0-tas1.0-v2" groups="somc,common"/>
++  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
++  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="70e124d8c3ca2cddc5b9010cd2bce654dd8f0924" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="7ccfa98c72630c0241db64aa6b12d620757cc345" groups="somc,common" upstream="common-shimanto"/>
++  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
+-  <project name="semctools/amss-deb-tool" path="tools/deb" revision="master-v2" groups="somc,common"/>
+-  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="a16-common-2" groups="somc,common"/>
+-  <project name="tools/dtc" revision="master" groups="somc,common"/>
+-  <project name="tools/gcc_x86" revision="master" groups="somc,common"/>
+-  <project name="tools/hexagon-19" path="tools/hexagon" revision="master" groups="somc,common"/>
+-  <project name="tools/linaro" revision="master" groups="somc,common"/>
+-  <project name="tools/llvm-18" path="tools/llvm" revision="master" groups="somc,common"/>
+-  <project name="tools/nanopb" revision="master-v1" groups="somc,common"/>
+-  <project name="tools/python" revision="master-jammy" groups="somc,common"/>
++  <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
++  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
++  <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
++  <project name="tools/gcc_x86" revision="742fde7142b816b80152ea93803e060536cc7690" groups="somc,common" upstream="master"/>
++  <project name="tools/hexagon-19" path="tools/hexagon" revision="a695e7e77242bf3ff11b9fa81d079457c6f52581" groups="somc,common" upstream="master"/>
++  <project name="tools/linaro" revision="ce01bdc7895424724e8c16c9bbb76a8adb8bbe38" groups="somc,common" upstream="master"/>
++  <project name="tools/llvm-18" path="tools/llvm" revision="51dbbf236041766815e8201d183777034746a7bf" groups="somc,common" upstream="master"/>
++  <project name="tools/nanopb" revision="8bfca7bf28599d0cbd22b3c987539b4739f12ebc" groups="somc,common" upstream="master-v1"/>
++  <project name="tools/python" revision="359a0ae2e8df1afdff7e9f294870ef77f2e8986f" groups="somc,common" upstream="master-jammy"/>
+   <project name="tools/rvct" revision="refs/tags/6.00.46" groups="somc,common"/>
+-  <project name="tools/zephyr" revision="master" groups="somc,common"/>
++  <project name="tools/zephyr" revision="1ddb8c749976d78b971fe55a81914c50c88cbf41" groups="somc,common" upstream="master"/>
+ </manifest>
+diff --git a/upstreams/xperia/static-manifest.xml b/upstreams/xperia/static-manifest.xml
+index d50f5a0a4..0913555b9 100644
+--- a/upstreams/xperia/static-manifest.xml
++++ b/upstreams/xperia/static-manifest.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="2cd65bcc748e406a0a55852ec7adec644b0e0022" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="17e8d36ba54174c5b72efe6838dea1fa452be73f" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="10432a5307d4ed546286a2a926f63211ebaf9f30" groups="somc,common" upstream="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="187c8703fa5a029574063f1e9347eb2ddc8914ed" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="51d5f3afcbc0ea8b1c9fe0e8d5ce272f04d3bb09" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="9978826b9f3ce180da52ed07461b13b2bc286f6c" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="1d8a1663d8d9aeeddbdacb8ec83e73e0762c4931" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="0e8d3782c82fc907aaa42a2d360de0f0f117202e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="d8ba7fca7f437f81cbc7bdbd8e4f133f60a0cb4b" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="064ed0ba1bf103ab88aa48fc67404f5468e1d377" groups="somc,common" upstream="a16-common-2"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="23bc4fbd7b033838fb7952c52d5cf8f591a716b5" groups="somc,common" upstream="common-16.2.0"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="2a01ab57ad47a5ab5c6ce51c8856ff624ef9e45e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/version b/upstreams/xperia/version
+index c46919e4a..e46e5fdf2 100644
+--- a/upstreams/xperia/version
++++ b/upstreams/xperia/version
+@@ -1 +1 @@
+-73.0.A.0.398
++73.0.A.1.53'
++ '[' -n 'diff --git a/cm_decisive_systems.json b/cm_decisive_systems.json
+index c33250d4b..69f33a2bc 100644
+--- a/cm_decisive_systems.json
++++ b/cm_decisive_systems.json
+@@ -1,3 +1,3 @@
+ [
+-    "chikugo-1.0.0"
++    "chikugo-1.0.0-rel"
+ ]
+\ No newline at end of file
+diff --git a/default.xml b/default.xml
+index 18f652562..722c88e8f 100644
+--- a/default.xml
++++ b/default.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="chikugo-1.0.0"/>
++  <default remote="origin" revision="chikugo-1.0.0-rel"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" groups="vendor,specific">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0-rel" groups="somc,common"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/component-version b/upstreams/xperia/component-version
+index c3917ea48..49d25c74c 100644
+--- a/upstreams/xperia/component-version
++++ b/upstreams/xperia/component-version
+@@ -1 +1 @@
+-A16-CHIKUGO-SM8850-LA1.0-260306-0655
++CHIKUGO-1.0.0-260519-1720
+diff --git a/upstreams/xperia/manifest-revision b/upstreams/xperia/manifest-revision
+index 9fbec4ff9..e26a94fa8 100644
+--- a/upstreams/xperia/manifest-revision
++++ b/upstreams/xperia/manifest-revision
+@@ -1 +1 @@
+-8723382cf8e1582c5189260fac65de2dc96d5a4c
++590cad95870611424e143bac66485b45daae636b
+diff --git a/upstreams/xperia/original-manifest.xml b/upstreams/xperia/original-manifest.xml
+index 972bf9563..18f652562 100644
+--- a/upstreams/xperia/original-manifest.xml
++++ b/upstreams/xperia/original-manifest.xml
+@@ -3,20 +3,20 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
+-  <project name="platform/amss-build" path="build" revision="master-v4" groups="somc,common">
++  <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+-  <project name="platform/amss-config" path="config" groups="somc,specific"/>
+-  <project name="platform/amss-ta" path="sony/ta" revision="master-v3" groups="somc,common"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
++  <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+   <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
+-  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" groups="vendor,specific"/>
++  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" groups="vendor,specific"/>
++  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+@@ -26,30 +26,30 @@
+   <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+   <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+   <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
+-  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" groups="vendor,specific"/>
++  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" groups="vendor,specific"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="a16-common-2" groups="somc,common"/>
+-  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="a16-common-2" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+-  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="common-chikugo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="common-shimanto" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="qct-qtee5.0-tas1.0-v2" groups="somc,common"/>
++  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
++  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="70e124d8c3ca2cddc5b9010cd2bce654dd8f0924" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="7ccfa98c72630c0241db64aa6b12d620757cc345" groups="somc,common" upstream="common-shimanto"/>
++  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
+-  <project name="semctools/amss-deb-tool" path="tools/deb" revision="master-v2" groups="somc,common"/>
+-  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="a16-common-2" groups="somc,common"/>
+-  <project name="tools/dtc" revision="master" groups="somc,common"/>
+-  <project name="tools/gcc_x86" revision="master" groups="somc,common"/>
+-  <project name="tools/hexagon-19" path="tools/hexagon" revision="master" groups="somc,common"/>
+-  <project name="tools/linaro" revision="master" groups="somc,common"/>
+-  <project name="tools/llvm-18" path="tools/llvm" revision="master" groups="somc,common"/>
+-  <project name="tools/nanopb" revision="master-v1" groups="somc,common"/>
+-  <project name="tools/python" revision="master-jammy" groups="somc,common"/>
++  <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
++  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
++  <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
++  <project name="tools/gcc_x86" revision="742fde7142b816b80152ea93803e060536cc7690" groups="somc,common" upstream="master"/>
++  <project name="tools/hexagon-19" path="tools/hexagon" revision="a695e7e77242bf3ff11b9fa81d079457c6f52581" groups="somc,common" upstream="master"/>
++  <project name="tools/linaro" revision="ce01bdc7895424724e8c16c9bbb76a8adb8bbe38" groups="somc,common" upstream="master"/>
++  <project name="tools/llvm-18" path="tools/llvm" revision="51dbbf236041766815e8201d183777034746a7bf" groups="somc,common" upstream="master"/>
++  <project name="tools/nanopb" revision="8bfca7bf28599d0cbd22b3c987539b4739f12ebc" groups="somc,common" upstream="master-v1"/>
++  <project name="tools/python" revision="359a0ae2e8df1afdff7e9f294870ef77f2e8986f" groups="somc,common" upstream="master-jammy"/>
+   <project name="tools/rvct" revision="refs/tags/6.00.46" groups="somc,common"/>
+-  <project name="tools/zephyr" revision="master" groups="somc,common"/>
++  <project name="tools/zephyr" revision="1ddb8c749976d78b971fe55a81914c50c88cbf41" groups="somc,common" upstream="master"/>
+ </manifest>
+diff --git a/upstreams/xperia/static-manifest.xml b/upstreams/xperia/static-manifest.xml
+index d50f5a0a4..0913555b9 100644
+--- a/upstreams/xperia/static-manifest.xml
++++ b/upstreams/xperia/static-manifest.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="2cd65bcc748e406a0a55852ec7adec644b0e0022" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="17e8d36ba54174c5b72efe6838dea1fa452be73f" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="10432a5307d4ed546286a2a926f63211ebaf9f30" groups="somc,common" upstream="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="187c8703fa5a029574063f1e9347eb2ddc8914ed" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="51d5f3afcbc0ea8b1c9fe0e8d5ce272f04d3bb09" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="9978826b9f3ce180da52ed07461b13b2bc286f6c" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="1d8a1663d8d9aeeddbdacb8ec83e73e0762c4931" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="0e8d3782c82fc907aaa42a2d360de0f0f117202e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="d8ba7fca7f437f81cbc7bdbd8e4f133f60a0cb4b" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="064ed0ba1bf103ab88aa48fc67404f5468e1d377" groups="somc,common" upstream="a16-common-2"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="23bc4fbd7b033838fb7952c52d5cf8f591a716b5" groups="somc,common" upstream="common-16.2.0"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="2a01ab57ad47a5ab5c6ce51c8856ff624ef9e45e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/version b/upstreams/xperia/version
+index c46919e4a..e46e5fdf2 100644
+--- a/upstreams/xperia/version
++++ b/upstreams/xperia/version
+@@ -1 +1 @@
+-73.0.A.0.398
++73.0.A.1.53' ']'
++ echo 'project .repo/manifests/'
++ tee -a /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/result-dir/amss_diff.txt
+project .repo/manifests/
++ tee -a /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/result-dir/amss_diff.txt
++ echo 'diff --git a/cm_decisive_systems.json b/cm_decisive_systems.json
+index c33250d4b..69f33a2bc 100644
+--- a/cm_decisive_systems.json
++++ b/cm_decisive_systems.json
+@@ -1,3 +1,3 @@
+ [
+-    "chikugo-1.0.0"
++    "chikugo-1.0.0-rel"
+ ]
+\ No newline at end of file
+diff --git a/default.xml b/default.xml
+index 18f652562..722c88e8f 100644
+--- a/default.xml
++++ b/default.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="chikugo-1.0.0"/>
++  <default remote="origin" revision="chikugo-1.0.0-rel"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" groups="vendor,specific">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0-rel" groups="somc,common"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/component-version b/upstreams/xperia/component-version
+index c3917ea48..49d25c74c 100644
+--- a/upstreams/xperia/component-version
++++ b/upstreams/xperia/component-version
+@@ -1 +1 @@
+-A16-CHIKUGO-SM8850-LA1.0-260306-0655
++CHIKUGO-1.0.0-260519-1720
+diff --git a/upstreams/xperia/manifest-revision b/upstreams/xperia/manifest-revision
+index 9fbec4ff9..e26a94fa8 100644
+--- a/upstreams/xperia/manifest-revision
++++ b/upstreams/xperia/manifest-revision
+@@ -1 +1 @@
+-8723382cf8e1582c5189260fac65de2dc96d5a4c
++590cad95870611424e143bac66485b45daae636b
+diff --git a/upstreams/xperia/original-manifest.xml b/upstreams/xperia/original-manifest.xml
+index 972bf9563..18f652562 100644
+--- a/upstreams/xperia/original-manifest.xml
++++ b/upstreams/xperia/original-manifest.xml
+@@ -3,20 +3,20 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
+-  <project name="platform/amss-build" path="build" revision="master-v4" groups="somc,common">
++  <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+-  <project name="platform/amss-config" path="config" groups="somc,specific"/>
+-  <project name="platform/amss-ta" path="sony/ta" revision="master-v3" groups="somc,common"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
++  <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+   <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
+-  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" groups="vendor,specific"/>
++  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" groups="vendor,specific"/>
++  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+@@ -26,30 +26,30 @@
+   <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+   <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+   <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
+-  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" groups="vendor,specific"/>
++  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" groups="vendor,specific"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="a16-common-2" groups="somc,common"/>
+-  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="a16-common-2" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+-  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="common-chikugo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="common-shimanto" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="qct-qtee5.0-tas1.0-v2" groups="somc,common"/>
++  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
++  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="70e124d8c3ca2cddc5b9010cd2bce654dd8f0924" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="7ccfa98c72630c0241db64aa6b12d620757cc345" groups="somc,common" upstream="common-shimanto"/>
++  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
+-  <project name="semctools/amss-deb-tool" path="tools/deb" revision="master-v2" groups="somc,common"/>
+-  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="a16-common-2" groups="somc,common"/>
+-  <project name="tools/dtc" revision="master" groups="somc,common"/>
+-  <project name="tools/gcc_x86" revision="master" groups="somc,common"/>
+-  <project name="tools/hexagon-19" path="tools/hexagon" revision="master" groups="somc,common"/>
+-  <project name="tools/linaro" revision="master" groups="somc,common"/>
+-  <project name="tools/llvm-18" path="tools/llvm" revision="master" groups="somc,common"/>
+-  <project name="tools/nanopb" revision="master-v1" groups="somc,common"/>
+-  <project name="tools/python" revision="master-jammy" groups="somc,common"/>
++  <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
++  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
++  <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
++  <project name="tools/gcc_x86" revision="742fde7142b816b80152ea93803e060536cc7690" groups="somc,common" upstream="master"/>
++  <project name="tools/hexagon-19" path="tools/hexagon" revision="a695e7e77242bf3ff11b9fa81d079457c6f52581" groups="somc,common" upstream="master"/>
++  <project name="tools/linaro" revision="ce01bdc7895424724e8c16c9bbb76a8adb8bbe38" groups="somc,common" upstream="master"/>
++  <project name="tools/llvm-18" path="tools/llvm" revision="51dbbf236041766815e8201d183777034746a7bf" groups="somc,common" upstream="master"/>
++  <project name="tools/nanopb" revision="8bfca7bf28599d0cbd22b3c987539b4739f12ebc" groups="somc,common" upstream="master-v1"/>
++  <project name="tools/python" revision="359a0ae2e8df1afdff7e9f294870ef77f2e8986f" groups="somc,common" upstream="master-jammy"/>
+   <project name="tools/rvct" revision="refs/tags/6.00.46" groups="somc,common"/>
+-  <project name="tools/zephyr" revision="master" groups="somc,common"/>
++  <project name="tools/zephyr" revision="1ddb8c749976d78b971fe55a81914c50c88cbf41" groups="somc,common" upstream="master"/>
+ </manifest>
+diff --git a/upstreams/xperia/static-manifest.xml b/upstreams/xperia/static-manifest.xml
+index d50f5a0a4..0913555b9 100644
+--- a/upstreams/xperia/static-manifest.xml
++++ b/upstreams/xperia/static-manifest.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="2cd65bcc748e406a0a55852ec7adec644b0e0022" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="17e8d36ba54174c5b72efe6838dea1fa452be73f" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="10432a5307d4ed546286a2a926f63211ebaf9f30" groups="somc,common" upstream="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="187c8703fa5a029574063f1e9347eb2ddc8914ed" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="51d5f3afcbc0ea8b1c9fe0e8d5ce272f04d3bb09" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="9978826b9f3ce180da52ed07461b13b2bc286f6c" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="1d8a1663d8d9aeeddbdacb8ec83e73e0762c4931" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="0e8d3782c82fc907aaa42a2d360de0f0f117202e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="d8ba7fca7f437f81cbc7bdbd8e4f133f60a0cb4b" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="064ed0ba1bf103ab88aa48fc67404f5468e1d377" groups="somc,common" upstream="a16-common-2"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="23bc4fbd7b033838fb7952c52d5cf8f591a716b5" groups="somc,common" upstream="common-16.2.0"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="2a01ab57ad47a5ab5c6ce51c8856ff624ef9e45e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/version b/upstreams/xperia/version
+index c46919e4a..e46e5fdf2 100644
+--- a/upstreams/xperia/version
++++ b/upstreams/xperia/version
+@@ -1 +1 @@
+-73.0.A.0.398
++73.0.A.1.53'
+diff --git a/cm_decisive_systems.json b/cm_decisive_systems.json
+index c33250d4b..69f33a2bc 100644
+--- a/cm_decisive_systems.json
++++ b/cm_decisive_systems.json
+@@ -1,3 +1,3 @@
+ [
+-    "chikugo-1.0.0"
++    "chikugo-1.0.0-rel"
+ ]
+\ No newline at end of file
+diff --git a/default.xml b/default.xml
+index 18f652562..722c88e8f 100644
+--- a/default.xml
++++ b/default.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="chikugo-1.0.0"/>
++  <default remote="origin" revision="chikugo-1.0.0-rel"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" groups="vendor,specific">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0-rel" groups="somc,common"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/component-version b/upstreams/xperia/component-version
+index c3917ea48..49d25c74c 100644
+--- a/upstreams/xperia/component-version
++++ b/upstreams/xperia/component-version
+@@ -1 +1 @@
+-A16-CHIKUGO-SM8850-LA1.0-260306-0655
++CHIKUGO-1.0.0-260519-1720
+diff --git a/upstreams/xperia/manifest-revision b/upstreams/xperia/manifest-revision
+index 9fbec4ff9..e26a94fa8 100644
+--- a/upstreams/xperia/manifest-revision
++++ b/upstreams/xperia/manifest-revision
+@@ -1 +1 @@
+-8723382cf8e1582c5189260fac65de2dc96d5a4c
++590cad95870611424e143bac66485b45daae636b
+diff --git a/upstreams/xperia/original-manifest.xml b/upstreams/xperia/original-manifest.xml
+index 972bf9563..18f652562 100644
+--- a/upstreams/xperia/original-manifest.xml
++++ b/upstreams/xperia/original-manifest.xml
+@@ -3,20 +3,20 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" groups="vendor,specific"/>
+-  <project name="platform/amss-build" path="build" revision="master-v4" groups="somc,common">
++  <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+-  <project name="platform/amss-config" path="config" groups="somc,specific"/>
+-  <project name="platform/amss-ta" path="sony/ta" revision="master-v3" groups="somc,common"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
++  <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" groups="vendor,specific"/>
+   <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" groups="vendor,specific"/>
+-  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" groups="vendor,specific"/>
++  <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" groups="vendor,specific"/>
++  <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065" groups="somc,common"/>
+@@ -26,30 +26,30 @@
+   <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" groups="vendor,specific"/>
+   <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" groups="vendor,specific"/>
+   <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" groups="vendor,specific"/>
+-  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" groups="vendor,specific"/>
++  <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" groups="vendor,specific"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" groups="vendor,specific"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="a16-common-2" groups="somc,common"/>
+-  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="a16-common-2" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="common-16.2.0" groups="somc,common"/>
++  <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+-  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="common-chikugo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="common-shimanto" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="common-yodo" groups="somc,common"/>
+-  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="qct-qtee5.0-tas1.0-v2" groups="somc,common"/>
++  <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
++  <project name="platform/vendor/sony/tzapp-securedata" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsecuredata" revision="70e124d8c3ca2cddc5b9010cd2bce654dd8f0924" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-suntory" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappsuntory" revision="7ccfa98c72630c0241db64aa6b12d620757cc345" groups="somc,common" upstream="common-shimanto"/>
++  <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
++  <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" groups="vendor,specific"/>
+-  <project name="semctools/amss-deb-tool" path="tools/deb" revision="master-v2" groups="somc,common"/>
+-  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="a16-common-2" groups="somc,common"/>
+-  <project name="tools/dtc" revision="master" groups="somc,common"/>
+-  <project name="tools/gcc_x86" revision="master" groups="somc,common"/>
+-  <project name="tools/hexagon-19" path="tools/hexagon" revision="master" groups="somc,common"/>
+-  <project name="tools/linaro" revision="master" groups="somc,common"/>
+-  <project name="tools/llvm-18" path="tools/llvm" revision="master" groups="somc,common"/>
+-  <project name="tools/nanopb" revision="master-v1" groups="somc,common"/>
+-  <project name="tools/python" revision="master-jammy" groups="somc,common"/>
++  <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
++  <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
++  <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
++  <project name="tools/gcc_x86" revision="742fde7142b816b80152ea93803e060536cc7690" groups="somc,common" upstream="master"/>
++  <project name="tools/hexagon-19" path="tools/hexagon" revision="a695e7e77242bf3ff11b9fa81d079457c6f52581" groups="somc,common" upstream="master"/>
++  <project name="tools/linaro" revision="ce01bdc7895424724e8c16c9bbb76a8adb8bbe38" groups="somc,common" upstream="master"/>
++  <project name="tools/llvm-18" path="tools/llvm" revision="51dbbf236041766815e8201d183777034746a7bf" groups="somc,common" upstream="master"/>
++  <project name="tools/nanopb" revision="8bfca7bf28599d0cbd22b3c987539b4739f12ebc" groups="somc,common" upstream="master-v1"/>
++  <project name="tools/python" revision="359a0ae2e8df1afdff7e9f294870ef77f2e8986f" groups="somc,common" upstream="master-jammy"/>
+   <project name="tools/rvct" revision="refs/tags/6.00.46" groups="somc,common"/>
+-  <project name="tools/zephyr" revision="master" groups="somc,common"/>
++  <project name="tools/zephyr" revision="1ddb8c749976d78b971fe55a81914c50c88cbf41" groups="somc,common" upstream="master"/>
+ </manifest>
+diff --git a/upstreams/xperia/static-manifest.xml b/upstreams/xperia/static-manifest.xml
+index d50f5a0a4..0913555b9 100644
+--- a/upstreams/xperia/static-manifest.xml
++++ b/upstreams/xperia/static-manifest.xml
+@@ -3,35 +3,35 @@
+   <!--<?xml version="1.0" encoding="UTF-8"?><metadata version="2"/>-->
+   <remote fetch="git://review.ptc.sony.co.jp/" name="origin" review="review.ptc.sony.co.jp"/>
+   <manifest-server url="https://cmweb.ptc.sony.co.jp/rpc?amss"/>
+-  <default remote="origin" revision="a16-chikugo-sm8850-la1.0"/>
++  <default remote="origin" revision="chikugo-1.0.0"/>
+   <project name="platform/acpolicy-sm8850" path="ACPOLICY.XF.1.0/acpolicy" revision="4f42dab7500a157b6550ba4f7bc65551e10c0ce0" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="2cd65bcc748e406a0a55852ec7adec644b0e0022" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/adsp-sm8850" path="LPAIDSP.HT.1.2/adsp_proc" revision="ba20af73300299fd83000c7e03deae388ee5041c" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/amss-build" path="build" revision="48174881f2104b76a6c52b243d0e33b26633ea80" groups="somc,common" upstream="master-v4">
+     <copyfile dest="Makefile" src="bootstrap.mk"/>
+     <linkfile dest="build.sh" src="build.sh"/>
+   </project>
+   <project name="platform/amss-config" path="config" revision="f5bba2f84e1069070e3ee9f5c550b1dc479465ed" groups="somc,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/amss-ta" path="sony/ta" revision="3993b53edbfec505dee21b3093f0ab663c26f7bd" groups="somc,common" upstream="master-v3"/>
+-  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="17e8d36ba54174c5b72efe6838dea1fa452be73f" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/aop-sm8850" path="AOP.HO.7.0/aop_proc" revision="e407263fdcef76fc20702f7f481183e82aac0266" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/boot-sm8850" path="BOOT.MXF.2.5.3/boot_images" revision="5ea810fcb1517ff4ce5fad15a7da2defd3c6c6c0" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/btfwb-sm8850" path="BTFW.BRAHMA.2.0.1/btfw_proc" revision="882df39e3fb207fa105e6d0c5a6de83ffcf1ea34" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/btfwg-sm8850" path="BTFW.GANGES.2.0.1/btfw_proc" revision="7d668977c3917a67b8c6e8786e3449d751f19376" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/cdsp-sm8850" path="CDSP.HT.3.2/cdsp_proc" revision="303e5f460397c47be9efab130fdd41a22c70c762" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/cpucp-sm8850" path="CPUCP.FW.1.0/cpucp_proc" revision="1c916364780104129e7a173705792fd7ffcbb831" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/dcp-sm8850" path="DCP.FW.1.1/dcp_proc" revision="f03b2e1c7e85fc8314ec5fc35e4a7a62fa37a9e8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/external/mbedtls" path="sony/mbedtls" revision="10432a5307d4ed546286a2a926f63211ebaf9f30" groups="somc,common" upstream="refs/tags/AU_LINUX_ANDROID_LA.QSSI.16.0.R1.11.00.00.1274.065"/>
+-  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="187c8703fa5a029574063f1e9347eb2ddc8914ed" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0">
++  <project name="platform/metabuild-sm8850" path="Kaanapali.LA.1.0/common" revision="1ef2569c69b1f9497fcc50353eb4d90dede6d085" groups="vendor,specific" upstream="chikugo-1.0.0">
+     <linkfile dest="Kaanapali.LA.1.0/contents.xml" src="contents.xml"/>
+   </project>
+-  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="51d5f3afcbc0ea8b1c9fe0e8d5ce272f04d3bb09" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="9978826b9f3ce180da52ed07461b13b2bc286f6c" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="1d8a1663d8d9aeeddbdacb8ec83e73e0762c4931" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/mpss-sm8850" path="MPSS.DE.9.0/modem_proc" revision="c09d4fa7fa7b398cfaeb0ea481e1c7235c22b16a" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/pdp-sm8850" path="PDP.FW.1.0/pdp_fw" revision="fe798f33657f7939b9b428ecac23279ebf4f8143" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/soccp-sm8850" path="SOCCP.FW.2.1/soccp_proc" revision="2b12e97b846c86f04838474fe6d59669a2d0d3cd" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="platform/spss-sm8850" path="SPSS.A1.1.11/spss_proc" revision="4b7717004972c7e0479a05c42792317b655f3242" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+   <project name="platform/tme-sm8850" path="TME.FW.4.0/tme_proc" revision="96b0a748725dbca9b82265dcb483fe1dd225630b" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+   <project name="platform/tmel-sm8850" path="TMEL.GANGES.2.0/tmel_images" revision="c3c051a52d1fd30e007f0edf08992cd1449109e6" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="0e8d3782c82fc907aaa42a2d360de0f0f117202e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="d8ba7fca7f437f81cbc7bdbd8e4f133f60a0cb4b" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
+-  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="064ed0ba1bf103ab88aa48fc67404f5468e1d377" groups="somc,common" upstream="a16-common-2"/>
++  <project name="platform/trustzone-sm8850" path="TZ.XF.5.33/trustzone_images" revision="950725be5f77042d99b22ed9bed9cfb401c5b4f2" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/tzapps-sm8850" path="TZ.APPS.1.33/qtee_tas" revision="1346687468c020ceebec14d92aa5073961bddec1" groups="vendor,specific" upstream="chikugo-1.0.0"/>
++  <project name="platform/vendor/semc/build/system-snapshot" path="vendor/semc/build/system-snapshot" revision="23bc4fbd7b033838fb7952c52d5cf8f591a716b5" groups="somc,common" upstream="common-16.2.0"/>
+   <project name="platform/vendor/semc/build/tools-signatory" path="vendor/semc/build/certs" revision="44eeffada2d15ccc43b12040d5371a0bd347984a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="platform/vendor/semc/fs/main" path="sony/fs" revision="bc2644199824d1d939f42c829cc44ec7abf4eefa" groups="somc,common" upstream="master"/>
+   <project name="platform/vendor/semc/s1/s1certificate" path="sony/certificates" revision="dd6e0b0ea309762c144ae42fe45d8379582982a9" groups="somc,common" upstream="common-chikugo"/>
+@@ -40,7 +40,7 @@
+   <project name="platform/vendor/sony/tzapp-tpm" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzapptpm" revision="88c4043235337dceabafd94675891e72c370134d" groups="somc,common" upstream="common-yodo"/>
+   <project name="platform/vendor/sony/tzapp-xflattest" path="TZ.APPS.1.33/qtee_tas/apps/securemsm/trustzone/sonyapps/sonytzappxflattest" revision="4e9e334859135932892c60e10018d50f90faebef" groups="somc,common" upstream="qct-qtee5.0-tas1.0-v2"/>
+   <project name="platform/wlanb-sm8850" path="WLAN.BRH.2.0/wlan_proc" revision="0f3433fdeab35f70e899266d696c0c67b3f14fc8" groups="vendor,specific" upstream="odm/hq/android/a16-chikugo-amss-release"/>
+-  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="2a01ab57ad47a5ab5c6ce51c8856ff624ef9e45e" groups="vendor,specific" upstream="a16-chikugo-sm8850-la1.0"/>
++  <project name="platform/wlang-sm8850" path="WLAN.GNG.2.0/wlan_proc" revision="47c76e1a31d853b8e815d82e63f899d60f3862a5" groups="vendor,specific" upstream="chikugo-1.0.0"/>
+   <project name="semctools/amss-deb-tool" path="tools/deb" revision="4d084ac4d7b220153d2cb8682103656fc0a8462c" groups="somc,common" upstream="master-v2"/>
+   <project name="semctools/semcsystem" path="vendor/semc/build/semcsystem" revision="26629cb929072084bfe12cc7c8a2faa5122ec35a" groups="somc,common" upstream="a16-common-2"/>
+   <project name="tools/dtc" revision="3252cae2b7d5644ada232e55fb69b12696d5b8af" groups="somc,common" upstream="master"/>
+diff --git a/upstreams/xperia/version b/upstreams/xperia/version
+index c46919e4a..e46e5fdf2 100644
+--- a/upstreams/xperia/version
++++ b/upstreams/xperia/version
+@@ -1 +1 @@
+-73.0.A.0.398
++73.0.A.1.53
++ echo ''
++ tee -a /home/hudsonslave/workspace/system_diff_matrix/6f74d4e1/result-dir/amss_diff.txt
+
++ repo forall -cvp 'git diff HEAD..$REPO_RREV'
++ tee -a result-dir/amss_diff.txt
+project vendor/semc/build/system-snapshot/
+diff --git a/chikugo/packages.xml b/chikugo/packages.xml
+index 3ffc6449645..7a576319cf7 100644
+--- a/chikugo/packages.xml
++++ b/chikugo/packages.xml
+@@ -1,9 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <packages>
+-    <label component="amss" revision="CHIKUGO-1.0.0-260518-1719"/>
+-    <label component="android-qssi" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-qssi-debug" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-target" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="android-target-debug" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="misc" revision="73.0.A.1.52"/>
++    <label component="amss" revision="CHIKUGO-1.0.0-REL-260403-1157"/>
++    <label component="android-qssi" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-qssi-debug" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-target" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="android-target-debug" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="misc" revision="73.0.A.2.35"/>
+ </packages>
+diff --git a/chikugo/user/packages.xml b/chikugo/user/packages.xml
+index 3ffc6449645..7a576319cf7 100644
+--- a/chikugo/user/packages.xml
++++ b/chikugo/user/packages.xml
+@@ -1,9 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <packages>
+-    <label component="amss" revision="CHIKUGO-1.0.0-260518-1719"/>
+-    <label component="android-qssi" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-qssi-debug" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-target" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="android-target-debug" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="misc" revision="73.0.A.1.52"/>
++    <label component="amss" revision="CHIKUGO-1.0.0-REL-260403-1157"/>
++    <label component="android-qssi" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-qssi-debug" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-target" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="android-target-debug" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="misc" revision="73.0.A.2.35"/>
+ </packages>
+diff --git a/chikugo/userdebug/packages.xml b/chikugo/userdebug/packages.xml
+index 3ffc6449645..7a576319cf7 100644
+--- a/chikugo/userdebug/packages.xml
++++ b/chikugo/userdebug/packages.xml
+@@ -1,9 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <packages>
+-    <label component="amss" revision="CHIKUGO-1.0.0-260518-1719"/>
+-    <label component="android-qssi" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-qssi-debug" revision="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+-    <label component="android-target" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="android-target-debug" revision="CHIKUGO-1.0.0-260519-0519"/>
+-    <label component="misc" revision="73.0.A.1.52"/>
++    <label component="amss" revision="CHIKUGO-1.0.0-REL-260403-1157"/>
++    <label component="android-qssi" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-qssi-debug" revision="QSSI-16.2.0-REL-CHIKUGO-260403-2248"/>
++    <label component="android-target" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="android-target-debug" revision="CHIKUGO-1.0.0-REL-260407-0507"/>
++    <label component="misc" revision="73.0.A.2.35"/>
+ </packages>
++ '[' -n 'platform/vendor/semc/build/system-snapshot platform/vendor/semc/build/android-qssi-packages platform/vendor/semc/build/android-target-packages platform/vendor/semc/build/pld-packages' ']'
++ cp result-dir/amss_diff.txt result-dir/amss_diff_excluded.txt
++ for exclude_project in $EXCLUDE_PROJECTS
++ [[ platform/vendor/semc/build/system-snapshot =~ platform/(qssi|target|system|amss)manifest ]]
+++ xmllint --xpath 'string(//manifest/project[@name="platform/vendor/semc/build/system-snapshot"]/@path)' manifest_static_1.xml
++ exclude_path=vendor/semc/build/system-snapshot
+++ echo vendor/semc/build/system-snapshot
+++ sed 's/\//\\\//g'
++ start_pattern='^project vendor\/semc\/build\/system-snapshot\/$'
++ end_pattern='^$'
++ sed -i '/^project vendor\/semc\/build\/system-snapshot\/$/,/^$/d' result-dir/amss_diff_excluded.txt
++ for exclude_project in $EXCLUDE_PROJECTS
++ [[ platform/vendor/semc/build/android-qssi-packages =~ platform/(qssi|target|system|amss)manifest ]]
+++ xmllint --xpath 'string(//manifest/project[@name="platform/vendor/semc/build/android-qssi-packages"]/@path)' manifest_static_1.xml
++ exclude_path=
+++ echo ''
+++ sed 's/\//\\\//g'
++ start_pattern='^project \/$'
++ end_pattern='^$'
++ sed -i '/^project \/$/,/^$/d' result-dir/amss_diff_excluded.txt
++ for exclude_project in $EXCLUDE_PROJECTS
++ [[ platform/vendor/semc/build/android-target-packages =~ platform/(qssi|target|system|amss)manifest ]]
+++ xmllint --xpath 'string(//manifest/project[@name="platform/vendor/semc/build/android-target-packages"]/@path)' manifest_static_1.xml
++ exclude_path=
+++ echo ''
+++ sed 's/\//\\\//g'
++ start_pattern='^project \/$'
++ end_pattern='^$'
++ sed -i '/^project \/$/,/^$/d' result-dir/amss_diff_excluded.txt
++ for exclude_project in $EXCLUDE_PROJECTS
++ [[ platform/vendor/semc/build/pld-packages =~ platform/(qssi|target|system|amss)manifest ]]
+++ xmllint --xpath 'string(//manifest/project[@name="platform/vendor/semc/build/pld-packages"]/@path)' manifest_static_1.xml
++ exclude_path=
+++ echo ''
+++ sed 's/\//\\\//g'
++ start_pattern='^project \/$'
++ end_pattern='^$'
++ sed -i '/^project \/$/,/^$/d' result-dir/amss_diff_excluded.txt
+Archiving artifacts
+Finished: SUCCESS

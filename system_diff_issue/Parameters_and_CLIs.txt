@@ -1,0 +1,451 @@
+Context:
+-------------------------
+
+Below is the job used to check the delta b/w 2 label
+system_diff job
+ 
+
+ Regarding the validation delta check
+As per my understanding, we can the delta from the matrix job system_diff_matrix #20 - Jenkins for qssi, target, amss & system
+
+ 
+again pls check after running this delta job, how will u confirm that there is no delta between stage and rel branch. Whats the criteria ?
+ 
+As per the job execution I can see that we need to provide 2 label which compares the manifest from each label
+ 
+Also it uses the script system-diff.sh and system-diff-matrix.sh, where is 
+script compares two versions of a software component and generates a source-code diff report.
+ 
+Takes two package versions from DIFF_INPUT.
+Gets the corresponding .deb packages.
+Reads metadata from both packages to find their manifest information.
+Extracts the manifests from the packages.
+Initializes and syncs the source code using the first label's manifest.
+Compares the first label's Git revisions with the second label's revisions.
+It will save the changes in <>-diff.txt
+If EXCLUDE_PROJECTS is provided, removes those projects from the diff and creates exclude_diff.txt and saves in that
+system_diff_matrix.sh works taking two build-metadata .deb packages, extracting their manifests, syncing both source trees, and generating the Git diff.
+Using 
+repository getpackage 
+It will extract the component and using dpkg-deb -I "$deb_pkg_file_path_1" it will be able to see the metadata value for label1 and label2.
+Suppose metadata contain amss then it will create result-dir/AMSS_diff.txt
+ 
+From this part of the code
+dpkg --fsys-tarfile "$deb_pkg_file_path_1" | \
+    tar xOf - ./$manifest_static_path_1 > manifest_static_1.xml
+ 
+We get manifest_static_1.xml and manifest_static_2.xml
+Then it will initialize the repo and copy both the manifest_static.xml in .repo/manifest folder
+It will check for the diff b/w two manifest and the diff is copied to result-dir/${component_name}_diff.txt
+If the user specified projects to exclude, the script creates a second report with result-dir/${component_name}_diff_excluded.txt"
+ 
+Updated the folw of job execution above
+
+Parameters used:
+-------------------------------
+SYSTEM_LABEL_1
+[Mandatory] First system label, e.g. '64.1.A.1.371'.
+73.0.A.1.53
+SYSTEM_LABEL_2
+[Mandatory] Second system label, e.g. '64.1.A.0.859'.
+73.0.A.2.36
+EXCLUDE_PROJECTS
+[Optional] Space separated names of project to exclude from the diff
+platform/vendor/semc/build/system-snapshot platform/vendor/semc/build/android-qssi-packages platform/vendor/semc/build/android-target-packages platform/vendor/semc/build/pld-packages
+
+
+CLIs used
+-------------------------
+
+lt9004099841@JPC00237904:/mnt/sdd2/LT/Arkajyoti/SW$ repository --help
+Usage: repository <option> <parsedArgs>
+ options:
+   list <software label> [<options>]
+     - List all packages in the supplied software label
+       where <software label> is <label name>[:<label component>]
+       -g <regexp> --grep=<regexp> limit to packages matching the <regexp>
+       -V          --verbose include package component and package architecture in the list
+       -xml        --xml print the package list in XML format
+   listpackagecomponents
+     - List all supported package components
+   listpackagelabels <pkgname> <pkgversion>
+     - lists all mapped labels of a package
+   listlabels [<options>]
+     - List software labels.
+      limit the output to software labels ...
+       -g <regexp> --grep=<regexp> matching the regexp <regexp>
+       -b <branch> --branch=<branch> on the branch <branch>
+       -ll <branch> --latest-label=<branch> the latest label for the branch <branch>
+       -prod <product> --product=<product> supporting the product <product>
+       -pm <key>:<value> --package-metadata=<key>:<value> with package metadata <key>:<value>
+       -lm <key>:<value> --label-metadata=<key>:<value> with label metadata <key>:<value>
+       -nlm <key>:<value> --not-label-metadata=<key>:<value> without label metadata <key>:<value>
+       -st <status[,status..]> --status=<status[,status..]> with the status <status>
+          possible status values: unknown, remove, ongoing, internal, official, preserved, customer, deleted
+       -dmb <time-input> --modified-before=<time-input> last modified before <time-input>
+       -dma <time-input> --modified-after=<time-input> last modified after <time-input>
+       -dcb <time-input> --created-before=<time-input> created before <time-input>
+       -dca <time-input> --created-after=<time-input> created after <time-input>
+       -dclb <time-input> --created-local-before=<time-input> labels created before <time-input> on the given server
+       -dcla <time-input> --created-local-after=<time-input> labels created after <time-input> on the given server
+       -origin <repository> --origin=<repository> created on the given repository
+      format the output ...
+       -V --verbose include Status Created-time and Variants in output
+       -df <date-format> --date-format=<date-format> set preffered date format for output
+          supported formats:  epoch, rfc, iso, long, medium, short, date
+       -format <format-string> --format=<format-string> user-defined output format
+           %n - label name
+           %s - status
+           %mb - manifest branch
+           %p - built products
+           %dcl - date created on the given server
+           %dc - date created
+           %v - built variants
+           %dm - date last modified
+           %o - origin site
+       -header --header add headers to user-defined output format
+       -align --align align the user-defined output based on string lengths
+   labelmetadata <software label> [<key>:<value>|--remove=<key>]
+     - Update or list metadata of the supplied software label
+       -rm <key> --remove=<key> remove metadata with the key <key>
+   listrevisions <packagename>
+     - List all revisions of a specific package
+       -ai <value> --available-in=<value>  limit to packages available in the the given repository.
+       -al --available-local  limit to packages available in the local repository.
+   addpackage <packagepath> [--label=<software label>]
+     - Add a new package to the repository pool.
+      [Add or replace the package for a software label. (See option --label)
+       -icc --include-content-checksum  A checksum of the package content will be included
+           in the upload which will make the package reusable for future labels.
+           If a label is supplied the repository will be checked for a package Y with identical name
+           and contents as the given package X. If such a package Y is found, X's version will be
+           mapped to Y's version, and Y's version will be used instead of X's version
+           in package promotion.
+           To avoid promoting with addpackage add the '--no-promote' flag.
+       -np --no-promote       The package will not be promoted to the label even if --label=<label> is used.
+       -spi --show-package-info  Show information about the package actually promoted.
+           This option is only effective with --include-content-checksum.
+   addpackages <packagedirectory> 
+     - Add all new packages in a specific directory to the repository pool.
+      [Add or replace the packages for a software label. (See option --label)
+       -icc --include-content-checksum  The same as addpackage
+       -np --no-promote  The same as addpackage
+       -spi --show-package-info  The same as addpackage
+   promote <packagename> <revision> --label=<software label>
+     - Promote a package from pool to the given a software label
+   promotefromfile <xmlfile> [--label=<software label>]
+     - Promote packages from the pool to a software label
+       Example on xmlfile: <packages>
+                             <package name="testpackage" revision="1.0" />
+                           </packages>
+   setup <rootdir>|<url>
+     - Set up a basic folder structure for a repository, or use an existing
+       repository accessible via HTTP.
+   setup [-s <site> -t <type>|-ru <repository-uri>]
+     - Set up a default repository location (do not use this on Jenkins)
+       using "-ru none" will remove the default repository
+       (Currently site option is obsolete and will be ignored)
+   setup [-u <template>]
+     - Set up a user's uri template
+   import <software label> [<source repository>]
+     - Import a software label from a remote repository. If no source
+       repository is given, Lund repository (http://androidswrepo.sonyericsson.net/)
+       is used.
+   reimport [--keep] <software label> [source repository]
+     - Import a software label again. All packages are removed (unless the option --keep is used)
+       and import is run again.
+   createlabel <software label>
+     - Create a new software label.
+   removelabel [--keep] <software label> [<software label> . .]
+     - Remove software label(s) from the repository. All unreferenced packages of the
+       label(s) will be marked for removal unless the option --keep is used.
+       See packagegc for how to remove these packages from the repository.
+   packagegc
+     - Remove packages that are marked for removal. Only the default package component 'semc' packages are removed.
+   removeunreferencedpackages <nDays>
+     - Remove packages which are not used by any software label.
+     - <nDays> a number representing the number of days back in time. Packages created 
+       before that time but not used by any software label will be removed.
+       -pc --package-component  The component of the packages. If not specified, the default: 'semc'
+                                package component will be used.
+   db configure
+     - Install and/or configure database support for an existing C2D repository.
+       User will be prompted for settings.
+   db update <software label> [<software label> ..]
+     - Update the database for each given software label.
+   getpackage <name> <version>|--label=<software label> [--out=<destination dir>]
+     - Download a package with given version or from a given label.
+       The package is downloaded from the first repository where it is found.
+       The options -l and -o can be used instead of --label and --out.
+   status <software label> [<new-status>]
+     - Get or set software label status.
+       Status 'ongoing' can be changed to 'remove', 'internal', 'official' or 'customer'.
+       New labels created with createlabel will have status 'ongoing'.
+   latestlabel <branch> [--label-component]
+     - Retrieve the latest label on the given <branch>
+       Labels with status 'ongoing' and 'remove' are ignored.
+       Labels with a name that does not match any of the official patterns are ignored.
+       To list unofficial labels that are not shown by latestlabel, use listlabels -b.
+       -lc --label-component  The component of the labels. If not specified, the default: 'semc'
+                              label component will be used.
+   checklabel <label[,label..]>
+     - Perform a consistency check between the file system and the database for the
+       label(s) specified.
+ parsedArgs:
+   -u  <value> --uritemplate=<value>  Specify user's URI template
+   -al  --available-local  limit to packages available in the local repository.
+   -pc  <value> --package-component=<value>  Define package component. Default: semc
+   -d  --debug  Enable debugging. Default off
+   -ru  <value> --repositoryuri=<value>  The URI to the repository, ex. http://foo or file:///bar.
+        Overrides configuration, used as a single argument the configured URI is returned
+   -lc  <value> --label-component=<value>  Define label component. Default: semc
+   -l  <value> --label=<value>  Define which software label you work against. 
+        Acceptable syntax: <labelname>[:<labelcomponent>[:<labelarchitecture>]]
+   -t  <value> --type=<value>  Set the type of repository
+   -v  --version  Print version
+   -o  <value> --out=<value>  Output directory
+   -V  --verbose  Verbose output
+   -h  --help  Print help
+   -off  --offline  Not on SEMC network or offline
+   -e  --echo-options  Print effective options and exit
+   -pa  <value> --package-architecture=<value>  Define package architecture. Default: all
+   -s  <value> --site=<value>  Override the default site (currently -s option is obsolete and ignored.)
+   -4  --ipv4  Prefer IPv4 when selecting IP address
+   -6  --ipv6  Prefer IPv6 when selecting IP address (default, override -ipv4)
+   -la  <value> --label-architecture=<value>  Define label architecture. Default: arm
+   -ai  <value> --available-in=<value>  limit to packages available in the the given repository.
+ input formats:
+   <time-input> can be given in the following formats:
+    - <n>days (n days ago)
+    - Unix Epoch
+    - RFC 2822 [EEE, d MMM yyyy HH:mm:ss Z]
+    - ISO 8601 [yyyy-MM-dd HH:mm:ss Z]
+    - Long [yyyy-MM-dd HH:mm:ss]
+    - Medium [yyyy-MM-dd HH:mm]
+    - Short [yyyy-MM-dd HH]
+    - Date [yyyy-MM-dd]
+ read parsedArgs from .c2d-repository file:
+   - When an environment variable C2D_EXPAND_OPTS is set and its value is 1,
+     repository command searches a file named '.c2d-repository'
+     from the current working directory and its all ancestor directories.
+     If found, the content of the file is added to parsedArgs.
+     If multiple files are found, they all are simply added in ancestor wise.
+   - Example:
+     When .c2d-repository file with the content '-t PROTECTED' is on /home/CORPUSERS/12345678,
+     and the user runs 'C2D_EXPAND_OPTS=1 repository -V' on /home/CORPUSERS/12345678/work,
+     that is regarded as 'repository -V -t PROTECTED'.
+   - Notes:
+     * .c2d-repository files can contain only parsedArgs and their values.
+     * -e or --echo-options can be used to print all effective parsedArgs
+        mentioned in .c2d-repository files as well as command line.
+lt9004099841@JPC00237904:/mnt/sdd2/LT/Arkajyoti/SW$ xmllint --help
+Unknown option --help
+Usage : xmllint [options] XMLfiles ...
+	Parse the XML files and output the result of the parsing
+	--version : display the version of the XML library used
+	--debug : dump a debug tree of the in-memory document
+	--shell : run a navigating shell
+	--debugent : debug the entities defined in the document
+	--copy : used to test the internal copy implementation
+	--recover : output what was parsable on broken XML documents
+	--huge : remove any internal arbitrary parser limits
+	--noent : substitute entity references by their value
+	--noenc : ignore any encoding specified inside the document
+	--noout : don't output the result tree
+	--path 'paths': provide a set of paths for resources
+	--load-trace : print trace of all external entities loaded
+	--nonet : refuse to fetch DTDs or entities over network
+	--nocompact : do not generate compact text nodes
+	--htmlout : output results as HTML
+	--nowrap : do not put HTML doc wrapper
+	--valid : validate the document in addition to std well-formed check
+	--postvalid : do a posteriori validation, i.e after parsing
+	--dtdvalid URL : do a posteriori validation against a given DTD
+	--dtdvalidfpi FPI : same but name the DTD with a Public Identifier
+	--quiet : be quiet when succeeded
+	--timing : print some timings
+	--output file or -o file: save to a given file
+	--repeat : repeat 100 times, for timing or profiling
+	--insert : ad-hoc test for valid insertions
+	--compress : turn on gzip compression of output
+	--html : use the HTML parser
+	--xmlout : force to use the XML serializer when using --html
+	--nodefdtd : do not default HTML doctype
+	--push : use the push mode of the parser
+	--pushsmall : use the push mode of the parser using tiny increments
+	--memory : parse from memory
+	--maxmem nbbytes : limits memory allocation to nbbytes bytes
+	--nowarning : do not emit warnings from parser/validator
+	--noblanks : drop (ignorable?) blanks spaces
+	--nocdata : replace cdata section with text nodes
+	--format : reformat/reindent the output
+	--encode encoding : output in the given encoding
+	--dropdtd : remove the DOCTYPE of the input docs
+	--pretty STYLE : pretty-print in a particular style
+	                 0 Do not pretty print
+	                 1 Format the XML content, as --format
+	                 2 Add whitespace inside tags, preserving content
+	--c14n : save in W3C canonical format v1.0 (with comments)
+	--c14n11 : save in W3C canonical format v1.1 (with comments)
+	--exc-c14n : save in W3C exclusive canonical format (with comments)
+	--nsclean : remove redundant namespace declarations
+	--testIO : test user I/O support
+	--catalogs : use SGML catalogs from $SGML_CATALOG_FILES
+	             otherwise XML Catalogs starting from 
+	         file:///etc/xml/catalog are activated by default
+	--nocatalogs: deactivate all catalogs
+	--auto : generate a small doc on the fly
+	--xinclude : do XInclude processing
+	--noxincludenode : same but do not generate XInclude nodes
+	--nofixup-base-uris : do not fixup xml:base uris
+	--loaddtd : fetch external DTD
+	--dtdattr : loaddtd + populate the tree with inherited attributes 
+	--stream : use the streaming interface to process very large files
+	--walker : create a reader and walk though the resulting doc
+	--pattern pattern_value : test the pattern support
+	--chkregister : verify the node registration code
+	--relaxng schema : do RelaxNG validation against the schema
+	--schema schema : do validation against the WXS schema
+	--schematron schema : do validation against a schematron
+	--sax1: use the old SAX1 interfaces for processing
+	--sax: do not build a tree but work just at the SAX level
+	--oldxml10: use XML-1.0 parsing rules before the 5th edition
+	--xpath expr: evaluate the XPath expression, imply --noout
+
+Libxml project home page: https://gitlab.gnome.org/GNOME/libxml2
+lt9004099841@JPC00237904:/mnt/sdd2/LT/Arkajyoti/SW$ dpkg-deb --help
+Usage: dpkg-deb [<option>...] <command>
+
+Commands:
+  -b|--build <directory> [<deb>]   Build an archive.
+  -c|--contents <deb>              List contents.
+  -I|--info <deb> [<cfile>...]     Show info to stdout.
+  -W|--show <deb>                  Show information on package(s)
+  -f|--field <deb> [<cfield>...]   Show field(s) to stdout.
+  -e|--control <deb> [<directory>] Extract control info.
+  -x|--extract <deb> <directory>   Extract files.
+  -X|--vextract <deb> <directory>  Extract & list files.
+  -R|--raw-extract <deb> <directory>
+                                   Extract control info and files.
+  --ctrl-tarfile <deb>             Output control tarfile.
+  --fsys-tarfile <deb>             Output filesystem tarfile.
+
+  -?, --help                       Show this help message.
+      --version                    Show the version.
+
+<deb> is the filename of a Debian format archive.
+<cfile> is the name of an administrative file component.
+<cfield> is the name of a field in the main 'control' file.
+
+Options:
+  -v, --verbose                    Enable verbose output.
+  -D, --debug                      Enable debugging output.
+      --showformat=<format>        Use alternative format for --show.
+      --deb-format=<format>        Select archive format.
+                                     Allowed values: 0.939000, 2.0 (default).
+      --nocheck                    Suppress control file check (build bad
+                                     packages).
+      --root-owner-group           Forces the owner and groups to root.
+      --threads-max=<threads>      Use at most <threads> with compressor.
+      --[no-]uniform-compression   Use the compression params on all members.
+  -z#                              Set the compression level when building.
+  -Z<type>                         Set the compression type used when building.
+                                     Allowed types: gzip, xz, zstd, none.
+  -S<strategy>                     Set the compression strategy when building.
+                                     Allowed values: none; extreme (xz);
+                                     filtered, huffman, rle, fixed (gzip).
+
+Format syntax:
+  A format is a string that will be output for each package. The format
+  can include the standard escape sequences \n (newline), \r (carriage
+  return) or \\ (plain backslash). Package information can be included
+  by inserting variable references to package fields using the ${var[;width]}
+  syntax. Fields will be right-aligned unless the width is negative in which
+  case left alignment will be used.
+
+Use 'dpkg' to install and remove packages from your system, or
+'apt' or 'aptitude' for user-friendly package management. Packages
+unpacked using 'dpkg-deb --extract' will be incorrectly installed !
+lt9004099841@JPC00237904:/mnt/sdd2/LT/Arkajyoti/SW$ dpkg --help
+Usage: dpkg [<option>...] <command>
+
+Commands:
+  -i|--install       <.deb file name>... | -R|--recursive <directory>...
+  --unpack           <.deb file name>... | -R|--recursive <directory>...
+  -A|--record-avail  <.deb file name>... | -R|--recursive <directory>...
+  --configure        <package>... | -a|--pending
+  --triggers-only    <package>... | -a|--pending
+  -r|--remove        <package>... | -a|--pending
+  -P|--purge         <package>... | -a|--pending
+  -V|--verify [<package>...]       Verify the integrity of package(s).
+  --get-selections [<pattern>...]  Get list of selections to stdout.
+  --set-selections                 Set package selections from stdin.
+  --clear-selections               Deselect every non-essential package.
+  --update-avail [<Packages-file>] Replace available packages info.
+  --merge-avail [<Packages-file>]  Merge with info from file.
+  --clear-avail                    Erase existing available info.
+  --forget-old-unavail             Forget uninstalled unavailable pkgs.
+  -s|--status [<package>...]       Display package status details.
+  -p|--print-avail [<package>...]  Display available version details.
+  -L|--listfiles <package>...      List files 'owned' by package(s).
+  -l|--list [<pattern>...]         List packages concisely.
+  -S|--search <pattern>...         Find package(s) owning file(s).
+  -C|--audit [<package>...]        Check for broken package(s).
+  --yet-to-unpack                  Print packages selected for installation.
+  --predep-package                 Print pre-dependencies to unpack.
+  --add-architecture <arch>        Add <arch> to the list of architectures.
+  --remove-architecture <arch>     Remove <arch> from the list of architectures.
+  --print-architecture             Print dpkg architecture.
+  --print-foreign-architectures    Print allowed foreign architectures.
+  --assert-help                    Show help on assertions.
+  --assert-<feature>               Assert support for the specified feature.
+  --validate-<thing> <string>      Validate a <thing>'s <string>.
+  --compare-versions <a> <op> <b>  Compare version numbers - see below.
+  --force-help                     Show help on forcing.
+  -Dh|--debug=help                 Show help on debugging.
+
+  -?, --help                       Show this help message.
+      --version                    Show the version.
+
+Validatable things: pkgname, archname, trigname, version.
+
+Use dpkg with -b, --build, -c, --contents, -e, --control, -I, --info,
+  -f, --field, -x, --extract, -X, --vextract, --ctrl-tarfile, --fsys-tarfile
+on archives (type dpkg-deb --help).
+
+Options:
+  --admindir=<directory>     Use <directory> instead of /var/lib/dpkg.
+  --root=<directory>         Install on a different root directory.
+  --instdir=<directory>      Change installation dir without changing admin dir.
+  --pre-invoke=<command>     Set a pre-invoke hook.
+  --post-invoke=<command>    Set a post-invoke hook.
+  --path-exclude=<pattern>   Do not install paths which match a shell pattern.
+  --path-include=<pattern>   Re-include a pattern after a previous exclusion.
+  -O|--selected-only         Skip packages not selected for install/upgrade.
+  -E|--skip-same-version     Skip packages with same installed version/arch.
+  -G|--refuse-downgrade      Skip packages with earlier version than installed.
+  -B|--auto-deconfigure      Install even if it would break some other package.
+  --[no-]triggers            Skip or force consequential trigger processing.
+  --verify-format=<format>   Verify output format (supported: 'rpm').
+  --no-pager                 Disables the use of any pager.
+  --no-debsig                Do not try to verify package signatures.
+  --no-act|--dry-run|--simulate
+                             Just say what we would do - don't do it.
+  -D|--debug=<octal>         Enable debugging (see -Dhelp or --debug=help).
+  --status-fd <n>            Send status change updates to file descriptor <n>.
+  --status-logger=<command>  Send status change updates to <command>'s stdin.
+  --log=<filename>           Log status changes and actions to <filename>.
+  --ignore-depends=<package>[,...]
+                             Ignore dependencies involving <package>.
+  --force-<thing>[,...]      Override problems (see --force-help).
+  --no-force-<thing>[,...]   Stop when problems encountered.
+  --refuse-<thing>[,...]     Ditto.
+  --abort-after <n>          Abort after encountering <n> errors.
+  --robot                    Use machine-readable output on some commands.
+
+Comparison operators for --compare-versions are:
+  lt le eq ne ge gt       (treat empty version as earlier than any version);
+  lt-nl le-nl ge-nl gt-nl (treat empty version as later than any version);
+  < << <= = >= >> >       (only for compatibility with control file syntax).
+
+Use 'apt' or 'aptitude' for user-friendly package management.

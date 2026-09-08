@@ -1,0 +1,161 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/result-dir/all_diff_excluded.html
+Subject: 
+Date: Mon, 7 Sep 2026 22:46:51 +0530
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--CPEoxpU4MXn4CzTqrB4HWN4XmaSqwdznsH0XZZM1mj----"
+
+
+------MultipartBoundary--CPEoxpU4MXn4CzTqrB4HWN4XmaSqwdznsH0XZZM1mj----
+Content-Type: text/html
+Content-ID: <frame-50AE14F8F99481CC045FF1EBEBA3AF77@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/result-dir/all_diff_excluded.html
+
+<!DOCTYPE html><html><head><meta http-equiv=3D"Content-Type" content=3D"tex=
+t/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/css" href=3D=
+"cid:css-3b3cef8d-2b55-487b-af21-bbda33b72c8a@mhtml.blink" />
+</head><body>
+<h1>AMSS: CHIKUGO-1.0.0-260519-1720 vs CHIKUGO-1.0.0-REL-260520-0745</h1>
+<h2>.repo/manifests/</h2>
+<ol>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/f89c095a7db85e6e261c0adfa7a5b804.txt">diff --git a/cm_decisive=
+_systems.json b/cm_decisive_systems.json</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/921e4fac86040949b4efd996658b721a.txt">diff --git a/default.xml=
+ b/default.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/4170e5fd520aedb9415cb5735b40332d.txt">diff --git a/upstreams/x=
+peria/component-version b/upstreams/xperia/component-version</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/389bf3ec834914ca7f6bacf0bc0a2ad6.txt">diff --git a/upstreams/x=
+peria/manifest-revision b/upstreams/xperia/manifest-revision</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/47f5cd8f74ea3744cf561c60d9157a05.txt">diff --git a/upstreams/x=
+peria/original-manifest.xml b/upstreams/xperia/original-manifest.xml</a></l=
+i>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/74e0f5faa68efae5d0abd1d67b195e01.txt">diff --git a/upstreams/x=
+peria/static-manifest.xml b/upstreams/xperia/static-manifest.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/8790a5beafb8287feefd66d94f56756a.txt">diff --git a/upstreams/x=
+peria/version b/upstreams/xperia/version</a></li>
+</ol>
+<h1>ANDROID-QSSI: QSSI-16.2.0-CHIKUGO-260518-1719 vs QSSI-16.2.0-REL-CHIKUG=
+O-260520-0745</h1>
+<h2>.repo/manifests/</h2>
+<ol>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/c90ba7a7d51c22c647cb357a271be637.txt">diff --git a/cm_decisive=
+_systems.json b/cm_decisive_systems.json</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/bf1a0e676a7351505a85c98f292506c4.txt">diff --git a/default.xml=
+ b/default.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/ebf37e947f4b9ec0053b4658ef6efab1.txt">diff --git a/upstreams/x=
+peria/component-version b/upstreams/xperia/component-version</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/8d685c048481e43142f7c8cf4d03daaf.txt">diff --git a/upstreams/x=
+peria/manifest-revision b/upstreams/xperia/manifest-revision</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/f3e674cb36b19ea694a7f5f03e889991.txt">diff --git a/upstreams/x=
+peria/original-manifest.xml b/upstreams/xperia/original-manifest.xml</a></l=
+i>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/579d4fea26cb51b0e22c7b3f0a7a199f.txt">diff --git a/upstreams/x=
+peria/static-manifest.xml b/upstreams/xperia/static-manifest.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/265d4202a9148e551e7937fec5985b4d.txt">diff --git a/upstreams/x=
+peria/version b/upstreams/xperia/version</a></li>
+</ol>
+<h1>ANDROID-TARGET: CHIKUGO-1.0.0-260519-0519 vs CHIKUGO-1.0.0-REL-260520-0=
+745</h1>
+<h2>.repo/manifests/</h2>
+<ol>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/12f6c16778f3845d225ebb615e93347a.txt">diff --git a/cm_decisive=
+_systems.json b/cm_decisive_systems.json</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/191e3eda0e4d7f7658f3812a5e5ecd65.txt">diff --git a/default.xml=
+ b/default.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/83315595a0dca3316778223dbb5d9659.txt">diff --git a/upstreams/x=
+peria/component-version b/upstreams/xperia/component-version</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/0a61e67bdac6efe293c28c256ea3ca66.txt">diff --git a/upstreams/x=
+peria/manifest-revision b/upstreams/xperia/manifest-revision</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/d19828be1d90648804c0c0b1bbcf7635.txt">diff --git a/upstreams/x=
+peria/original-manifest.xml b/upstreams/xperia/original-manifest.xml</a></l=
+i>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/8b79b9999bd80de60220a8f8e19a63ca.txt">diff --git a/upstreams/x=
+peria/static-manifest.xml b/upstreams/xperia/static-manifest.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/41d250069402141ea1be27f74bc92d01.txt">diff --git a/upstreams/x=
+peria/version b/upstreams/xperia/version</a></li>
+</ol>
+<h2>device/somc/pdx267/</h2>
+<ol>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/f9bdcfc5fa2f80926d4dac543ed34e6c.txt">diff --git a/config/copy=
+-files/odm/etc/customization/c002110/config.prop b/config/copy-files/odm/et=
+c/customization/c002110/config.prop</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/adf9e3182af144c8dbd8f6c9629f7469.txt">diff --git a/config/copy=
+-files/odm/etc/customization/c002514/config.prop b/config/copy-files/odm/et=
+c/customization/c002514/config.prop</a></li>
+</ol>
+<h1>SYSTEM: 73.0.A.1.53 vs 73.0.A.2.36</h1>
+<h2>.repo/manifests/</h2>
+<ol>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/f0283058f9f07b7c5b6a8265b7cfd7b1.txt">diff --git a/cm_decisive=
+_systems.json b/cm_decisive_systems.json</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/a35cf2fc3b8167180fe070f5b5be4d0e.txt">diff --git a/default.xml=
+ b/default.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/91010a76f4912baa9d634ec2d12ae87d.txt">diff --git a/upstreams/x=
+peria/component-version b/upstreams/xperia/component-version</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/a390d1113be504c0dc0daa350813c5ba.txt">diff --git a/upstreams/x=
+peria/manifest-revision b/upstreams/xperia/manifest-revision</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/5f70b036584b8f38d0582203fd272ab0.txt">diff --git a/upstreams/x=
+peria/original-manifest.xml b/upstreams/xperia/original-manifest.xml</a></l=
+i>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/96d92c3f8885876a9b1f502ee557f67c.txt">diff --git a/upstreams/x=
+peria/static-manifest.xml b/upstreams/xperia/static-manifest.xml</a></li>
+<li><a href=3D"https://ci-cm.ptc.sony.co.jp/job/system_diff/23/artifact/res=
+ult-dir/diff/2bbe8ccbb0e165db3060eb5a4d400035.txt">diff --git a/upstreams/x=
+peria/version b/upstreams/xperia/version</a></li>
+</ol>
+<hr>
+<p>Projects excluded:</p>
+<ul>
+<li>platform/vendor/semc/build/system-snapshot</li>
+<li>platform/vendor/semc/build/android-qssi-packages</li>
+<li>platform/vendor/semc/build/android-target-packages</li>
+<li>platform/vendor/semc/build/pld-packages</li>
+</ul>
+
+
+</body></html>
+------MultipartBoundary--CPEoxpU4MXn4CzTqrB4HWN4XmaSqwdznsH0XZZM1mj----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-3b3cef8d-2b55-487b-af21-bbda33b72c8a@mhtml.blink
+
+@charset "utf-8";
+
+body { font-family: tahoma; }
+
+h1 { font-size: 140%; }
+
+h2 { font-size: 110%; }
+------MultipartBoundary--CPEoxpU4MXn4CzTqrB4HWN4XmaSqwdznsH0XZZM1mj------

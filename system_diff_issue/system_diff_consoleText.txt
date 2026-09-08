@@ -1,0 +1,367 @@
+Started by user Omprakash, Ambika (SEC)
+Rebuilds build #20
+Running as SYSTEM
+[EnvInject] - Loading node environment variables.
+Building remotely on EC2 (AWSJ2) - ci-cm_CM (i-06fe1d0ffd8291663) (CM) in workspace /home/hudsonslave/workspace/system_diff
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[EnvInject] - Executing scripts and injecting environment variables after the SCM step.
+[EnvInject] - Injecting as environment variables the properties content 
+PROPERTIES_FILE=properties.txt
+
+[EnvInject] - Variables injected successfully.
+[system_diff] $ /bin/bash -ex /tmp/jenkins5947551163338111755.sh
++ '[' -e /home/hudsonslave/.netrc ']'
++ cat ****
++ cat ****
++ chmod og-rw /home/hudsonslave/.netrc
+[system_diff] $ /bin/bash -ex /tmp/jenkins15568638923452282873.sh
++ '[' -d cm_tools ']'
++ git clone git://review.ptc.sony.co.jp/semctools/cm_tools -b master
+Cloning into 'cm_tools'...
+Total 18719 (delta 8638), reused 16269 (delta 8638)
++ cm_tools/hudson-scripts/system-diff.sh
++ '[' -z 73.0.A.1.53 ']'
++ '[' -z 73.0.A.2.36 ']'
++ '[' 73.0.A.1.53 = 73.0.A.2.36 ']'
+++ repository list 73.0.A.1.53 -g build-metadata -xml
++ build_metadata_pkgs_1='<?xml version="1.0" encoding="UTF-8"?><packages>
+<package architecture="all" component="semc" name="build-metadata-amss-chikugo-r1" version="CHIKUGO-1.0.0-260519-1720"/>
+<package architecture="all" component="semc" name="build-metadata-android-qssi" version="QSSI-16.2.0-CHIKUGO-260518-1719"/>
+<package architecture="all" component="semc" name="build-metadata-android-target" version="CHIKUGO-1.0.0-260519-0519"/>
+<package architecture="all" component="semc" name="build-metadata-system" version="73.0.A.1.53"/>
+<distribution architecture="arm" component="semc" name="73.0.A.1.53"/>
+</packages>'
++ ret_val=0
++ '[' 0 -ne 0 ']'
+++ repository list 73.0.A.2.36 -g build-metadata -xml
++ build_metadata_pkgs_2='<?xml version="1.0" encoding="UTF-8"?><packages>
+<package architecture="all" component="semc" name="build-metadata-amss-chikugo-r1" version="CHIKUGO-1.0.0-REL-260520-0745"/>
+<package architecture="all" component="semc" name="build-metadata-android-qssi" version="QSSI-16.2.0-REL-CHIKUGO-260520-0745"/>
+<package architecture="all" component="semc" name="build-metadata-android-target" version="CHIKUGO-1.0.0-REL-260520-0745"/>
+<package architecture="all" component="semc" name="build-metadata-system" version="73.0.A.2.36"/>
+<distribution architecture="arm" component="semc" name="73.0.A.2.36"/>
+</packages>'
++ ret_val=0
++ '[' 0 -ne 0 ']'
+++ xmllint --xpath 'count(//package)' -
++ pkgs_count_1=4
+++ xmllint --xpath 'count(//package)' -
++ pkgs_count_2=4
++ '[' 4 -ne 4 ']'
+++ repository labelmetadata 73.0.A.1.53
+++ grep XB-SEMC-Manifest-Branch:
+++ cut -d : -f2
+++ tr -d ' '
++ system_manifest_branch_1=chikugo-1.0.0
+++ repository labelmetadata 73.0.A.2.36
+++ grep XB-SEMC-Manifest-Branch:
+++ cut -d : -f2
+++ tr -d ' '
++ system_manifest_branch_2=chikugo-1.0.0-rel
++ job_description='Diff between 73.0.A.1.53 (chikugo-1.0.0) and 73.0.A.2.36 (chikugo-1.0.0-rel)'
++ curl -s https://ci-cm.ptc.sony.co.jp/job/system_diff/23/submitDescription --data-urlencode 'description=Diff between 73.0.A.1.53 (chikugo-1.0.0) and 73.0.A.2.36 (chikugo-1.0.0-rel)'
++ SYSTEM_DIFF_MATRIX_INPUT=
+++ seq 1 4
++ for i in $(seq 1 $pkgs_count_1)
+++ xmllint --xpath 'string(//packages/package[1]/@name)' -
++ build_metadata_pkg_name=build-metadata-amss-chikugo-r1
+++ xmllint --xpath 'string(//packages/package[1]/@version)' -
++ build_metadata_pkg_ver_1=CHIKUGO-1.0.0-260519-1720
+++ xmllint --xpath 'string(//packages/package[@name="build-metadata-amss-chikugo-r1"]/@version)' -
++ build_metadata_pkg_ver_2=CHIKUGO-1.0.0-REL-260520-0745
++ SYSTEM_DIFF_MATRIX_INPUT+='build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745 '
++ for i in $(seq 1 $pkgs_count_1)
+++ xmllint --xpath 'string(//packages/package[2]/@name)' -
++ build_metadata_pkg_name=build-metadata-android-qssi
+++ xmllint --xpath 'string(//packages/package[2]/@version)' -
++ build_metadata_pkg_ver_1=QSSI-16.2.0-CHIKUGO-260518-1719
+++ xmllint --xpath 'string(//packages/package[@name="build-metadata-android-qssi"]/@version)' -
++ build_metadata_pkg_ver_2=QSSI-16.2.0-REL-CHIKUGO-260520-0745
++ SYSTEM_DIFF_MATRIX_INPUT+='build-metadata-android-qssi|QSSI-16.2.0-CHIKUGO-260518-1719|QSSI-16.2.0-REL-CHIKUGO-260520-0745 '
++ for i in $(seq 1 $pkgs_count_1)
+++ xmllint --xpath 'string(//packages/package[3]/@name)' -
++ build_metadata_pkg_name=build-metadata-android-target
+++ xmllint --xpath 'string(//packages/package[3]/@version)' -
++ build_metadata_pkg_ver_1=CHIKUGO-1.0.0-260519-0519
+++ xmllint --xpath 'string(//packages/package[@name="build-metadata-android-target"]/@version)' -
++ build_metadata_pkg_ver_2=CHIKUGO-1.0.0-REL-260520-0745
++ SYSTEM_DIFF_MATRIX_INPUT+='build-metadata-android-target|CHIKUGO-1.0.0-260519-0519|CHIKUGO-1.0.0-REL-260520-0745 '
++ for i in $(seq 1 $pkgs_count_1)
+++ xmllint --xpath 'string(//packages/package[4]/@name)' -
++ build_metadata_pkg_name=build-metadata-system
+++ xmllint --xpath 'string(//packages/package[4]/@version)' -
++ build_metadata_pkg_ver_1=73.0.A.1.53
+++ xmllint --xpath 'string(//packages/package[@name="build-metadata-system"]/@version)' -
++ build_metadata_pkg_ver_2=73.0.A.2.36
++ SYSTEM_DIFF_MATRIX_INPUT+='build-metadata-system|73.0.A.1.53|73.0.A.2.36 '
++ echo 'SYSTEM_DIFF_MATRIX_INPUT=build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745 build-metadata-android-qssi|QSSI-16.2.0-CHIKUGO-260518-1719|QSSI-16.2.0-REL-CHIKUGO-260520-0745 build-metadata-android-target|CHIKUGO-1.0.0-260519-0519|CHIKUGO-1.0.0-REL-260520-0745 build-metadata-system|73.0.A.1.53|73.0.A.2.36 '
+Waiting for the completion of system_diff_matrix
+system_diff_matrix #23 started.
+system_diff_matrix #23 completed. Result was SUCCESS
+[system_diff] $ /bin/bash -ex /tmp/jenkins9252370159610803055.sh
++ eval 'MATRIX_BUILD_NUMBER=$TRIGGERED_BUILD_NUMBER_system_diff_matrix'
+++ MATRIX_BUILD_NUMBER=23
++ echo MATRIX_BUILD_NUMBER=23
+[EnvInject] - Injecting environment variables from a build step.
+[EnvInject] - Injecting as environment variables the properties file path 'properties.txt'
+[EnvInject] - Variables injected successfully.
+Copied 2 artifacts from "system_diff_matrix » build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745,CM_UTIL" build number 23
+Copied 2 artifacts from "system_diff_matrix » build-metadata-android-qssi|QSSI-16.2.0-CHIKUGO-260518-1719|QSSI-16.2.0-REL-CHIKUGO-260520-0745,CM_UTIL" build number 23
+Copied 2 artifacts from "system_diff_matrix » build-metadata-android-target|CHIKUGO-1.0.0-260519-0519|CHIKUGO-1.0.0-REL-260520-0745,CM_UTIL" build number 23
+Copied 2 artifacts from "system_diff_matrix » build-metadata-system|73.0.A.1.53|73.0.A.2.36,CM_UTIL" build number 23
+[system_diff] $ /bin/bash -ex /tmp/jenkins8768105967646469037.sh
++ cm_tools/hudson-scripts/system-diff-collect.sh
++ cat 'result-dir/DIFF_INPUT=build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745,label=CM_UTIL/amss_diff.txt' 'result-dir/DIFF_INPUT=build-metadata-android-qssi|QSSI-16.2.0-CHIKUGO-260518-1719|QSSI-16.2.0-REL-CHIKUGO-260520-0745,label=CM_UTIL/android-qssi_diff.txt' 'result-dir/DIFF_INPUT=build-metadata-android-target|CHIKUGO-1.0.0-260519-0519|CHIKUGO-1.0.0-REL-260520-0745,label=CM_UTIL/android-target_diff.txt' 'result-dir/DIFF_INPUT=build-metadata-system|73.0.A.1.53|73.0.A.2.36,label=CM_UTIL/system_diff.txt'
++ cat 'result-dir/DIFF_INPUT=build-metadata-amss-chikugo-r1|CHIKUGO-1.0.0-260519-1720|CHIKUGO-1.0.0-REL-260520-0745,label=CM_UTIL/amss_diff_excluded.txt' 'result-dir/DIFF_INPUT=build-metadata-android-qssi|QSSI-16.2.0-CHIKUGO-260518-1719|QSSI-16.2.0-REL-CHIKUGO-260520-0745,label=CM_UTIL/android-qssi_diff_excluded.txt' 'result-dir/DIFF_INPUT=build-metadata-android-target|CHIKUGO-1.0.0-260519-0519|CHIKUGO-1.0.0-REL-260520-0745,label=CM_UTIL/android-target_diff_excluded.txt' 'result-dir/DIFF_INPUT=build-metadata-system|73.0.A.1.53|73.0.A.2.36,label=CM_UTIL/system_diff_excluded.txt'
++ cd result-dir
++ awk_program='
+BEGIN {
+    in_diff=0
+    in_project=0
+    in_component=0
+
+    print "<!DOCTYPE html>"
+    print "<html>"
+    print "<style>"
+    print "body {font-family: tahoma;}"
+    print "h1 {font-size: 140%}"
+    print "h2 {font-size: 110%}"
+    print "</style>"
+    print "<body>"
+}
+in_diff == 1 && (/^diff/ || /^$/ || /^Diff/) {
+    in_diff=0
+}
+in_project == 1 && (/^project/ || /^$/ || /^Diff/) {
+    in_project=0
+    in_diff=0
+
+    print "</ol>"
+}
+in_component == 1 && /^Diff/ {
+    in_component=0
+    in_project=0
+    in_diff=0
+
+    if (project_cnt == 0)
+        print "<p>No diff</p>"
+}
+/^diff/ {
+    in_diff=1
+    diff=$0
+
+    cmd="echo \"" component project diff "\" | md5sum | cut -d'\'' '\'' -f1"
+    (cmd | getline md5sum)
+    diff_file=DIFF_FILES_DIR"/"md5sum".txt"
+    print "<li><a href=\""diff_file"\">"diff"</a></li>"
+}
+/^project/ {
+    in_project=1
+    project=$2
+
+    print "<h2>" project "</h2>"
+    print "<ol>"
+    project_cnt++
+}
+/^Diff/ {
+    in_component=1
+    component=$3
+    project_cnt=0
+    label_1=$4
+    label_2=$6
+
+    print "<h1>" toupper(component) ": " label_1 " vs " label_2 "</h1>"
+}
+{
+    if (in_diff == 1)
+        print > diff_file
+}
+END {
+    if (in_project == 1)
+        print "</ol>"
+
+    if (in_component == 1 && project_cnt == 0)
+        print "<p>No diff</p>"
+
+    if (length(EXCLUDE_PROJECTS) > 0) {
+        print "<hr>"
+        print "<p>Projects excluded:</p>"
+        print "<ul>"
+        n=split(EXCLUDE_PROJECTS,projects," ")
+        for (i=1; i<=n; i++)
+            print "<li>" projects[i] "</li>"
+        print "</ul>"
+    }
+
+    print "</body>"
+    print "</html>"
+}'
++ DIFF_FILES_DIR=diff
++ mkdir -p diff
++ awk -v DIFF_FILES_DIR=diff '
+BEGIN {
+    in_diff=0
+    in_project=0
+    in_component=0
+
+    print "<!DOCTYPE html>"
+    print "<html>"
+    print "<style>"
+    print "body {font-family: tahoma;}"
+    print "h1 {font-size: 140%}"
+    print "h2 {font-size: 110%}"
+    print "</style>"
+    print "<body>"
+}
+in_diff == 1 && (/^diff/ || /^$/ || /^Diff/) {
+    in_diff=0
+}
+in_project == 1 && (/^project/ || /^$/ || /^Diff/) {
+    in_project=0
+    in_diff=0
+
+    print "</ol>"
+}
+in_component == 1 && /^Diff/ {
+    in_component=0
+    in_project=0
+    in_diff=0
+
+    if (project_cnt == 0)
+        print "<p>No diff</p>"
+}
+/^diff/ {
+    in_diff=1
+    diff=$0
+
+    cmd="echo \"" component project diff "\" | md5sum | cut -d'\'' '\'' -f1"
+    (cmd | getline md5sum)
+    diff_file=DIFF_FILES_DIR"/"md5sum".txt"
+    print "<li><a href=\""diff_file"\">"diff"</a></li>"
+}
+/^project/ {
+    in_project=1
+    project=$2
+
+    print "<h2>" project "</h2>"
+    print "<ol>"
+    project_cnt++
+}
+/^Diff/ {
+    in_component=1
+    component=$3
+    project_cnt=0
+    label_1=$4
+    label_2=$6
+
+    print "<h1>" toupper(component) ": " label_1 " vs " label_2 "</h1>"
+}
+{
+    if (in_diff == 1)
+        print > diff_file
+}
+END {
+    if (in_project == 1)
+        print "</ol>"
+
+    if (in_component == 1 && project_cnt == 0)
+        print "<p>No diff</p>"
+
+    if (length(EXCLUDE_PROJECTS) > 0) {
+        print "<hr>"
+        print "<p>Projects excluded:</p>"
+        print "<ul>"
+        n=split(EXCLUDE_PROJECTS,projects," ")
+        for (i=1; i<=n; i++)
+            print "<li>" projects[i] "</li>"
+        print "</ul>"
+    }
+
+    print "</body>"
+    print "</html>"
+}' all_diff.txt
++ awk -v DIFF_FILES_DIR=diff -v 'EXCLUDE_PROJECTS=platform/vendor/semc/build/system-snapshot platform/vendor/semc/build/android-qssi-packages platform/vendor/semc/build/android-target-packages platform/vendor/semc/build/pld-packages' '
+BEGIN {
+    in_diff=0
+    in_project=0
+    in_component=0
+
+    print "<!DOCTYPE html>"
+    print "<html>"
+    print "<style>"
+    print "body {font-family: tahoma;}"
+    print "h1 {font-size: 140%}"
+    print "h2 {font-size: 110%}"
+    print "</style>"
+    print "<body>"
+}
+in_diff == 1 && (/^diff/ || /^$/ || /^Diff/) {
+    in_diff=0
+}
+in_project == 1 && (/^project/ || /^$/ || /^Diff/) {
+    in_project=0
+    in_diff=0
+
+    print "</ol>"
+}
+in_component == 1 && /^Diff/ {
+    in_component=0
+    in_project=0
+    in_diff=0
+
+    if (project_cnt == 0)
+        print "<p>No diff</p>"
+}
+/^diff/ {
+    in_diff=1
+    diff=$0
+
+    cmd="echo \"" component project diff "\" | md5sum | cut -d'\'' '\'' -f1"
+    (cmd | getline md5sum)
+    diff_file=DIFF_FILES_DIR"/"md5sum".txt"
+    print "<li><a href=\""diff_file"\">"diff"</a></li>"
+}
+/^project/ {
+    in_project=1
+    project=$2
+
+    print "<h2>" project "</h2>"
+    print "<ol>"
+    project_cnt++
+}
+/^Diff/ {
+    in_component=1
+    component=$3
+    project_cnt=0
+    label_1=$4
+    label_2=$6
+
+    print "<h1>" toupper(component) ": " label_1 " vs " label_2 "</h1>"
+}
+{
+    if (in_diff == 1)
+        print > diff_file
+}
+END {
+    if (in_project == 1)
+        print "</ol>"
+
+    if (in_component == 1 && project_cnt == 0)
+        print "<p>No diff</p>"
+
+    if (length(EXCLUDE_PROJECTS) > 0) {
+        print "<hr>"
+        print "<p>Projects excluded:</p>"
+        print "<ul>"
+        n=split(EXCLUDE_PROJECTS,projects," ")
+        for (i=1; i<=n; i++)
+            print "<li>" projects[i] "</li>"
+        print "</ul>"
+    }
+
+    print "</body>"
+    print "</html>"
+}' all_diff_excluded.txt
+Archiving artifacts
+Finished: SUCCESS

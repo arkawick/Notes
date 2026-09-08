@@ -1,0 +1,875 @@
+diff --git a/hudson-scripts/manifest_project_delta.py b/hudson-scripts/manifest_project_delta.py
+new file mode 100644
+index 0000000..31c64bd
+--- /dev/null
++++ b/hudson-scripts/manifest_project_delta.py
+@@ -0,0 +1,84 @@
++#!/usr/bin/env python3
++"""Compare the project sets of two static repo manifests.
++
++Prints one TAB separated record per project that is not provably identical in
++both manifests:
++
++    <STATE>\t<name>\t<path_1>\t<path_2>\t<revision_1>\t<revision_2>
++
++STATE is one of:
++
++    ADDED     project exists only in manifest 2
++    REMOVED   project exists only in manifest 1
++    MOVED     same revision, but the checkout path changed
++    CHANGED   the pinned revision differs, or at least one side is not an
++              immutable SHA-1.  A branch or tag name can resolve to different
++              commits even when the string is identical, so those projects can
++              never be assumed equal and are always compared.
++
++Missing values are printed as '-'.
++
++Projects that are absent from this output are pinned to the same SHA-1 in both
++manifests and therefore have identical content in both labels; they do not need
++to be synced or diffed.
++"""
++
++import re
++import sys
++import xml.etree.ElementTree as ET
++
++SHA1_RE = re.compile(r'^[0-9a-f]{40}$')
++
++
++def load(manifest_path):
++    """Return {name: (path, revision)} for every project in the manifest."""
++    root = ET.parse(manifest_path).getroot()
++    default = root.find('default')
++    default_revision = default.get('revision', '') if default is not None else ''
++
++    projects = {}
++    for project in root.iter('project'):
++        name = project.get('name')
++        if not name:
++            continue
++        projects[name] = (project.get('path') or name,
++                          project.get('revision') or default_revision)
++    return projects
++
++
++def main(argv):
++    if len(argv) != 3:
++        sys.stderr.write('usage: %s <manifest_1.xml> <manifest_2.xml>\n' % argv[0])
++        return 2
++
++    manifest_1 = load(argv[1])
++    manifest_2 = load(argv[2])
++
++    for name in sorted(set(manifest_1) - set(manifest_2)):
++        path, revision = manifest_1[name]
++        print('REMOVED\t%s\t%s\t-\t%s\t-' % (name, path, revision))
++
++    for name in sorted(set(manifest_2) - set(manifest_1)):
++        path, revision = manifest_2[name]
++        print('ADDED\t%s\t-\t%s\t-\t%s' % (name, path, revision))
++
++    for name in sorted(set(manifest_1) & set(manifest_2)):
++        path_1, revision_1 = manifest_1[name]
++        path_2, revision_2 = manifest_2[name]
++
++        immutable = SHA1_RE.match(revision_1) and SHA1_RE.match(revision_2)
++        if revision_1 != revision_2 or not immutable:
++            state = 'CHANGED'
++        elif path_1 != path_2:
++            state = 'MOVED'
++        else:
++            continue
++
++        print('%s\t%s\t%s\t%s\t%s\t%s'
++              % (state, name, path_1, path_2, revision_1, revision_2))
++
++    return 0
++
++
++if __name__ == '__main__':
++    sys.exit(main(sys.argv))
+diff --git a/hudson-scripts/system-diff-collect.sh b/hudson-scripts/system-diff-collect.sh
+index 5d8ac2e..297b1f9 100644
+--- a/hudson-scripts/system-diff-collect.sh
++++ b/hudson-scripts/system-diff-collect.sh
+@@ -1,96 +1,331 @@
+ #!/bin/bash -ex
++#
++# Step 3 of the system_diff job: collect the per component reports produced by
++# the system_diff_matrix job, render them as HTML and decide whether the two
++# system labels are equal.
++#
++# Input  (environment): EXCLUDE_PROJECTS, SYSTEM_LABEL_1, SYSTEM_LABEL_2
++#                       FAIL_ON_DELTA=1|0   (default 0)
++# Input  (files):       result-dir/<axis>/<component>_diff.txt
++#                       result-dir/<axis>/<component>_diff_excluded.txt
++# Output (files):       result-dir/all_diff.html
++#                       result-dir/all_diff_excluded.html
++#                       result-dir/diff/<md5>.txt
++#                       result-dir/stats.tsv
++#                       result-dir/summary.json
++#                       verdict.properties
++#
++set -o pipefail
+ 
+-cat result-dir/*/*_diff.txt >> result-dir/all_diff.txt
+-cat result-dir/*/*_diff_excluded.txt >> result-dir/all_diff_excluded.txt
++fail_on_delta="${FAIL_ON_DELTA:-0}"
++workspace="${WORKSPACE:-$PWD}"
++cd "$workspace"
++
++shopt -s nullglob
++diff_files=($(printf '%s\n' result-dir/*/*_diff.txt | sort))
++excluded_files=($(printf '%s\n' result-dir/*/*_diff_excluded.txt | sort))
++shopt -u nullglob
++
++if [ ${#diff_files[@]} -eq 0 ]; then
++    echo "ERROR: no per component diff reports were copied from system_diff_matrix, aborting!" >&2
++    exit 1
++fi
++
++# Truncating instead of appending: a rebuild in a workspace that was not
++# cleaned used to concatenate the previous run on top of the current one.
++cat "${diff_files[@]}" > result-dir/all_diff.txt
++
++if [ ${#excluded_files[@]} -eq 0 ]; then
++    # EXCLUDE_PROJECTS is documented as optional, so an empty exclusion list
++    # must not break the collection step.
++    cp result-dir/all_diff.txt result-dir/all_diff_excluded.txt
++else
++    cat "${excluded_files[@]}" > result-dir/all_diff_excluded.txt
++fi
+ 
+ (
+ cd result-dir
+ 
+ awk_program='
++function html_escape(s) {
++    gsub(/&/, "\\&amp;", s)
++    gsub(/</, "\\&lt;", s)
++    gsub(/>/, "\\&gt;", s)
++    return s
++}
++
++function emit(line) {
++    body = body line "\n"
++}
++
++function close_setchange() {
++    if (in_setchange == 1) {
++        emit("</ul>")
++        in_setchange = 0
++    }
++}
++
+ BEGIN {
+-    in_diff=0
+-    in_project=0
+-    in_component=0
++    comp_idx = 0
++    in_component = 0
++    in_project = 0
++    in_diff = 0
++    in_setchange = 0
++    is_meta = 0
++    body = ""
++}
+ 
+-    print "<!DOCTYPE html>"
+-    print "<html>"
+-    print "<style>"
+-    print "body {font-family: tahoma;}"
+-    print "h1 {font-size: 140%}"
+-    print "h2 {font-size: 110%}"
+-    print "</style>"
+-    print "<body>"
++in_diff == 1 && (/^diff/ || /^$/ || /^Diff/ || /^PROJECT-SET-CHANGE/) {
++    in_diff = 0
+ }
+-in_diff == 1 && (/^diff/ || /^$/ || /^Diff/) {
+-    in_diff=0
++
++in_project == 1 && (/^project/ || /^$/ || /^Diff/ || /^PROJECT-SET-CHANGE/) {
++    in_project = 0
++    in_diff = 0
++
++    emit("</ol>")
+ }
+-in_project == 1 && (/^project/ || /^$/ || /^Diff/) {
+-    in_project=0
+-    in_diff=0
+ 
+-    print "</ol>"
++in_setchange == 1 && !/^PROJECT-SET-CHANGE/ {
++    close_setchange()
+ }
++
+ in_component == 1 && /^Diff/ {
+-    in_component=0
+-    in_project=0
+-    in_diff=0
++    in_component = 0
++    in_project = 0
++    in_diff = 0
++
++    if (comp_projects[comp_idx] == 0 && comp_setchanges[comp_idx] == 0)
++        emit("<p class=\"nodiff\">No diff</p>")
++}
++
++/^PROJECT-SET-CHANGE/ {
++    if (in_setchange == 0) {
++        emit("<h2>Project set changes</h2>")
++        emit("<ul class=\"setchange\">")
++        in_setchange = 1
++    }
++    comp_setchanges[comp_idx]++
+ 
+-    if (project_cnt == 0)
+-        print "<p>No diff</p>"
++    line = "<li><b>" $2 "</b> " html_escape($3)
++    if ($2 == "MOVED")
++        line = line " &mdash; path " html_escape($4) " &rarr; " html_escape($5)
++    else if ($2 == "ADDED")
++        line = line " &mdash; path " html_escape($5) ", revision " html_escape($7)
++    else
++        line = line " &mdash; path " html_escape($4) ", revision " html_escape($6)
++    emit(line "</li>")
+ }
++
+ /^diff/ {
+-    in_diff=1
+-    diff=$0
++    in_diff = 1
++    diff = $0
++
++    if (is_meta == 0)
++        comp_files[comp_idx]++
+ 
+-    cmd="echo \"" component project diff "\" | md5sum | cut -d'\'' '\'' -f1"
++    key = component " " project " " diff
++    gsub(/[^A-Za-z0-9 ._\/-]/, "_", key)
++    cmd = "echo \"" key "\" | md5sum | cut -d\" \" -f1"
+     (cmd | getline md5sum)
+-    diff_file=DIFF_FILES_DIR"/"md5sum".txt"
+-    print "<li><a href=\""diff_file"\">"diff"</a></li>"
++    close(cmd)
++    diff_file = DIFF_FILES_DIR "/" md5sum ".txt"
++    emit("<li><a href=\"" diff_file "\">" html_escape(diff) "</a></li>")
+ }
++
+ /^project/ {
+-    in_project=1
+-    project=$2
++    close_setchange()
++
++    in_project = 1
++    project = $2
++    is_meta = (project == ".repo/manifests/")
+ 
+-    print "<h2>" project "</h2>"
+-    print "<ol>"
+-    project_cnt++
++    if (is_meta == 0) {
++        comp_projects[comp_idx]++
++        emit("<h2>" html_escape(project) "</h2>")
++    } else {
++        emit("<h2>" html_escape(project) " <span class=\"meta\">(manifest metadata, not a source delta)</span></h2>")
++    }
++    emit("<ol>")
+ }
++
+ /^Diff/ {
+-    in_component=1
+-    component=$3
+-    project_cnt=0
+-    label_1=$4
+-    label_2=$6
++    close_setchange()
++
++    comp_idx++
++    in_component = 1
++    is_meta = 0
++
++    component = $3
++    comp_name[comp_idx] = $3
++    comp_label_1[comp_idx] = $4
++    comp_label_2[comp_idx] = $6
++    comp_projects[comp_idx] = 0
++    comp_files[comp_idx] = 0
++    comp_setchanges[comp_idx] = 0
+ 
+-    print "<h1>" toupper(component) ": " label_1 " vs " label_2 "</h1>"
++    emit("<h1 id=\"c" comp_idx "\">" toupper($3) ": " $4 " vs " $6 "</h1>")
+ }
++
+ {
+     if (in_diff == 1)
+         print > diff_file
+ }
++
+ END {
++    close_setchange()
++
+     if (in_project == 1)
+-        print "</ol>"
++        emit("</ol>")
+ 
+-    if (in_component == 1 && project_cnt == 0)
+-        print "<p>No diff</p>"
++    if (in_component == 1 && comp_projects[comp_idx] == 0 && comp_setchanges[comp_idx] == 0)
++        emit("<p class=\"nodiff\">No diff</p>")
+ 
+     if (length(EXCLUDE_PROJECTS) > 0) {
+-        print "<hr>"
+-        print "<p>Projects excluded:</p>"
+-        print "<ul>"
+-        n=split(EXCLUDE_PROJECTS,projects," ")
+-        for (i=1; i<=n; i++)
+-            print "<li>" projects[i] "</li>"
+-        print "</ul>"
++        emit("<hr>")
++        emit("<p>Projects excluded:</p>")
++        emit("<ul>")
++        n = split(EXCLUDE_PROJECTS, excluded, " ")
++        for (i = 1; i <= n; i++)
++            emit("<li>" html_escape(excluded[i]) "</li>")
++        emit("</ul>")
+     }
+ 
++    total = 0
++    for (i = 1; i <= comp_idx; i++)
++        total += comp_projects[i] + comp_setchanges[i]
++
++    print "<!DOCTYPE html>"
++    print "<html>"
++    print "<head>"
++    print "<meta charset=\"utf-8\">"
++    print "<title>" TITLE "</title>"
++    print "<style>"
++    print "body {font-family: tahoma; margin: 1.5em;}"
++    print "h1 {font-size: 140%}"
++    print "h2 {font-size: 110%}"
++    print ".report-title {font-size: 150%; font-weight: bold;}"
++    print ".verdict {display: inline-block; padding: 0.4em 0.8em; font-weight: bold;}"
++    print ".ok {background: #e3f4e3; border: 1px solid #4a4;}"
++    print ".delta {background: #fdf0e0; border: 1px solid #d80;}"
++    print ".meta {font-weight: normal; color: #777; font-size: 85%;}"
++    print ".nodiff {color: #4a4; font-weight: bold;}"
++    print "table.summary {border-collapse: collapse; margin: 1em 0;}"
++    print "table.summary th, table.summary td {border: 1px solid #bbb; padding: 0.3em 0.8em; text-align: left;}"
++    print "table.summary th {background: #f0f0f0;}"
++    print "p.direction {color: #555;}"
++    print "</style>"
++    print "</head>"
++    print "<body>"
++
++    print "<p class=\"report-title\">" TITLE "</p>"
++    if (total == 0)
++        print "<p class=\"verdict ok\">NO DELTA - every component is identical on source code level</p>"
++    else
++        print "<p class=\"verdict delta\">DELTA FOUND - " total " project(s) differ, see the table below</p>"
++
++    print "<p class=\"direction\">Removed lines (-) are " LABEL_1 ", added lines (+) are " LABEL_2 ". The <i>.repo/manifests/</i> section describes the manifest git itself and always differs between two branches; it is not a source code delta.</p>"
++
++    print "<table class=\"summary\">"
++    print "<tr><th>Component</th><th>Label 1</th><th>Label 2</th><th>Projects with delta</th><th>Files changed</th><th>Project set changes</th><th>Verdict</th></tr>"
++    for (i = 1; i <= comp_idx; i++) {
++        if (comp_projects[i] + comp_setchanges[i] == 0)
++            verdict = "<span class=\"nodiff\">no delta</span>"
++        else
++            verdict = "<b>delta</b>"
++        print "<tr><td><a href=\"#c" i "\">" toupper(comp_name[i]) "</a></td><td>" html_escape(comp_label_1[i]) "</td><td>" html_escape(comp_label_2[i]) "</td><td>" comp_projects[i] "</td><td>" comp_files[i] "</td><td>" comp_setchanges[i] "</td><td>" verdict "</td></tr>"
++    }
++    print "</table>"
++
++    printf "%s", body
++
+     print "</body>"
+     print "</html>"
++
++    if (STATS_FILE != "") {
++        for (i = 1; i <= comp_idx; i++)
++            printf "%s\t%d\t%d\t%d\n", comp_name[i], comp_projects[i], comp_files[i], comp_setchanges[i] > STATS_FILE
++        close(STATS_FILE)
++    }
+ }'
+ 
+ DIFF_FILES_DIR=diff
+ mkdir -p "$DIFF_FILES_DIR"
+-awk -v DIFF_FILES_DIR="$DIFF_FILES_DIR" "$awk_program" all_diff.txt > all_diff.html
+-awk -v DIFF_FILES_DIR="$DIFF_FILES_DIR" -v EXCLUDE_PROJECTS="$EXCLUDE_PROJECTS" "$awk_program" all_diff_excluded.txt > all_diff_excluded.html
++
++awk -v DIFF_FILES_DIR="$DIFF_FILES_DIR" \
++    -v LABEL_1="${SYSTEM_LABEL_1:-label 1}" \
++    -v LABEL_2="${SYSTEM_LABEL_2:-label 2}" \
++    -v TITLE="System diff ${SYSTEM_LABEL_1:-label 1} vs ${SYSTEM_LABEL_2:-label 2} - all projects" \
++    "$awk_program" all_diff.txt > all_diff.html
++
++awk -v DIFF_FILES_DIR="$DIFF_FILES_DIR" \
++    -v EXCLUDE_PROJECTS="$EXCLUDE_PROJECTS" \
++    -v LABEL_1="${SYSTEM_LABEL_1:-label 1}" \
++    -v LABEL_2="${SYSTEM_LABEL_2:-label 2}" \
++    -v TITLE="System diff ${SYSTEM_LABEL_1:-label 1} vs ${SYSTEM_LABEL_2:-label 2} - excluded projects removed" \
++    -v STATS_FILE=stats.tsv \
++    "$awk_program" all_diff_excluded.txt > all_diff_excluded.html
+ )
++
++# ---------------------------------------------------------------------------
++# Verdict
++# ---------------------------------------------------------------------------
++stats_file="result-dir/stats.tsv"
++[ -f "$stats_file" ] || : > "$stats_file"
++
++delta_count=$(awk -F'\t' '{ total += $2 + $4 } END { print total + 0 }' "$stats_file")
++
++if [ "$delta_count" -eq 0 ]; then
++    verdict="NO_DELTA"
++else
++    verdict="DELTA_FOUND"
++fi
++
++awk -F'\t' \
++    -v label_1="${SYSTEM_LABEL_1:-}" \
++    -v label_2="${SYSTEM_LABEL_2:-}" \
++    -v verdict="$verdict" \
++    -v delta_count="$delta_count" \
++    -v excluded="${EXCLUDE_PROJECTS:-}" \
++    -v build_url="${BUILD_URL:-}" '
++BEGIN {
++    printf "{\n"
++    printf "  \"system_label_1\": \"%s\",\n", label_1
++    printf "  \"system_label_2\": \"%s\",\n", label_2
++    printf "  \"verdict\": \"%s\",\n", verdict
++    printf "  \"delta_project_count\": %d,\n", delta_count
++    printf "  \"excluded_projects\": \"%s\",\n", excluded
++    printf "  \"build_url\": \"%s\",\n", build_url
++    printf "  \"components\": ["
++}
++{
++    if (NR > 1)
++        printf ","
++    printf "\n    {\"component\": \"%s\", \"delta_projects\": %d, \"delta_files\": %d, \"project_set_changes\": %d}", $1, $2, $3, $4
++}
++END {
++    if (NR > 0)
++        printf "\n  "
++    printf "]\n}\n"
++}' "$stats_file" > result-dir/summary.json
++
++{
++    echo "SYSTEM_DIFF_VERDICT=${verdict}"
++    echo "SYSTEM_DIFF_DELTA_COUNT=${delta_count}"
++} > verdict.properties
++
++echo "============================================================"
++echo "VERDICT: ${verdict} (${SYSTEM_LABEL_1:-label 1} vs ${SYSTEM_LABEL_2:-label 2})"
++echo "------------------------------------------------------------"
++awk -F'\t' '{
++    if ($2 + $4 == 0)
++        printf "  %-16s no source delta\n", $1
++    else
++        printf "  %-16s %d project(s), %d file(s), %d project set change(s)\n", $1, $2, $3, $4
++}' "$stats_file"
++echo "============================================================"
++
++if [ "$verdict" = "DELTA_FOUND" ] && [ "$fail_on_delta" = "1" ]; then
++    echo "ERROR: a delta was found and FAIL_ON_DELTA is enabled." >&2
++    exit 2
++fi
+diff --git a/hudson-scripts/system-diff-matrix.sh b/hudson-scripts/system-diff-matrix.sh
+index 719fba4..a292687 100644
+--- a/hudson-scripts/system-diff-matrix.sh
++++ b/hudson-scripts/system-diff-matrix.sh
+@@ -1,58 +1,239 @@
+ #!/bin/bash -ex
++#
++# Step 2 of the system_diff job, run once per component (matrix axis
++# DIFF_INPUT): produce the source code diff of one component between two
++# system labels.
++#
++# Input  (environment): DIFF_INPUT="<package>|<version_1>|<version_2>"
++#                       EXCLUDE_PROJECTS  (optional, space separated names)
++#                       REPO_MIRROR       (optional, local repo mirror)
++#                       STRICT_DIFF_ERRORS=1|0             (default 1)
++#                       INCLUDE_MANIFEST_GIT_DIFF=1|0      (default 1)
++#                       INCLUDE_GIT_LOG=1|0                (default 1)
++#                       SYNC_JOBS=<n>                      (default 8)
++# Output (files):       result-dir/<component>_diff.txt
++#                       result-dir/<component>_diff_excluded.txt
++#                       result-dir/<component>_gitlog.txt
++#                       result-dir/<component>_project_delta.tsv
++#
++set -o pipefail
+ 
+-mkdir "result-dir"
++script_dir="$(cd "$(dirname "$0")" && pwd)"
++workspace="${WORKSPACE:-$PWD}"
++result_dir="$workspace/result-dir"
++strict_diff_errors="${STRICT_DIFF_ERRORS:-1}"
++include_manifest_git_diff="${INCLUDE_MANIFEST_GIT_DIFF:-1}"
++include_git_log="${INCLUDE_GIT_LOG:-1}"
++sync_jobs="${SYNC_JOBS:-8}"
+ 
+-input=($(echo $DIFF_INPUT | tr '|' ' '))
+-build_metadata_pkg_name=${input[0]}
+-build_metadata_pkg_ver_1=${input[1]}
+-build_metadata_pkg_ver_2=${input[2]}
++mkdir -p "$result_dir"
+ 
+-deb_pkg_file_path_1=$(repository getpackage $build_metadata_pkg_name $build_metadata_pkg_ver_1)
+-deb_pkg_file_path_2=$(repository getpackage $build_metadata_pkg_name $build_metadata_pkg_ver_2)
++# ---------------------------------------------------------------------------
++# 1. Resolve the two build-metadata packages of this component
++# ---------------------------------------------------------------------------
++if [ -z "$DIFF_INPUT" ]; then
++    echo "ERROR: DIFF_INPUT is empty, aborting!" >&2
++    exit 1
++fi
++
++IFS='|' read -r build_metadata_pkg_name build_metadata_pkg_ver_1 build_metadata_pkg_ver_2 <<<"$DIFF_INPUT"
++if [ -z "$build_metadata_pkg_name" ] || [ -z "$build_metadata_pkg_ver_1" ] || [ -z "$build_metadata_pkg_ver_2" ]; then
++    echo "ERROR: DIFF_INPUT '${DIFF_INPUT}' is not '<package>|<version_1>|<version_2>', aborting!" >&2
++    exit 1
++fi
++
++deb_pkg_file_path_1=$(repository getpackage "$build_metadata_pkg_name" "$build_metadata_pkg_ver_1")
++deb_pkg_file_path_2=$(repository getpackage "$build_metadata_pkg_name" "$build_metadata_pkg_ver_2")
+ dpkg-deb -I "$deb_pkg_file_path_1" > metadata_1.txt
+ dpkg-deb -I "$deb_pkg_file_path_2" > metadata_2.txt
+ 
+-component_name=$(cat metadata_1.txt | grep XB-SONY-Component-Name: | cut -d ':' -f2 | tr -d ' ')
+-manifest_git=$(cat metadata_1.txt | grep XB-SONY-Component-Manifest-Git: | cut -d ':' -f2 | tr -d ' ')
+-manifest_branch=$(cat metadata_1.txt | grep XB-SONY-Component-Manifest-Branch: | cut -d ':' -f2 | tr -d ' ')
+-manifest_static_path_1=$(cat metadata_1.txt | grep XB-SONY-Component-Manifest-Static-Path: | cut -d ':' -f2 | tr -d ' ')
+-manifest_static_path_2=$(cat metadata_2.txt | grep XB-SONY-Component-Manifest-Static-Path: | cut -d ':' -f2 | tr -d ' ')
+-manifest_static_revision_1=$(cat metadata_1.txt | grep XB-SONY-Component-Manifest-Revision: | cut -d ':' -f2 | tr -d ' ')
+-manifest_static_revision_2=$(cat metadata_2.txt | grep XB-SONY-Component-Manifest-Revision: | cut -d ':' -f2 | tr -d ' ')
+-dpkg --fsys-tarfile "$deb_pkg_file_path_1" | tar xOf - ./$manifest_static_path_1 > manifest_static_1.xml
+-dpkg --fsys-tarfile "$deb_pkg_file_path_2" | tar xOf - ./$manifest_static_path_2 > manifest_static_2.xml
+-
+-repo init -u git://review.ptc.sony.co.jp/$manifest_git -b $manifest_branch --reference={repo-mirror-location}
+-cp manifest_static_1.xml .repo/manifests/.
+-cp manifest_static_2.xml .repo/manifests/.
++metadata_field() {  # <metadata-file> <field-name>
++    grep -m1 "^ *${2}:" "$1" | cut -d ':' -f2- | tr -d ' '
++}
++
++component_name=$(metadata_field metadata_1.txt XB-SONY-Component-Name)
++component_name_2=$(metadata_field metadata_2.txt XB-SONY-Component-Name)
++manifest_git=$(metadata_field metadata_1.txt XB-SONY-Component-Manifest-Git)
++manifest_branch=$(metadata_field metadata_1.txt XB-SONY-Component-Manifest-Branch)
++manifest_static_path_1=$(metadata_field metadata_1.txt XB-SONY-Component-Manifest-Static-Path)
++manifest_static_path_2=$(metadata_field metadata_2.txt XB-SONY-Component-Manifest-Static-Path)
++manifest_static_revision_1=$(metadata_field metadata_1.txt XB-SONY-Component-Manifest-Revision)
++manifest_static_revision_2=$(metadata_field metadata_2.txt XB-SONY-Component-Manifest-Revision)
++
++for field in component_name component_name_2 manifest_git manifest_branch \
++             manifest_static_path_1 manifest_static_path_2 \
++             manifest_static_revision_1 manifest_static_revision_2; do
++    if [ -z "${!field}" ]; then
++        echo "ERROR: '${field}' is missing from the package metadata of ${build_metadata_pkg_name}, aborting!" >&2
++        exit 1
++    fi
++done
++
++if [ "$component_name" != "$component_name_2" ]; then
++    echo "ERROR: The two packages describe different components (${component_name} vs ${component_name_2}), aborting!" >&2
++    exit 1
++fi
++
++diff_file="$result_dir/${component_name}_diff.txt"
++excluded_file="$result_dir/${component_name}_diff_excluded.txt"
++error_file="$result_dir/${component_name}_diff_errors.txt"
++gitlog_file="$result_dir/${component_name}_gitlog.txt"
++delta_file="$result_dir/${component_name}_project_delta.tsv"
++
++# "set -o pipefail" matters here: without it a failing dpkg or tar leaves an
++# empty manifest behind and the whole component is silently reported as having
++# no delta.
++dpkg --fsys-tarfile "$deb_pkg_file_path_1" | tar xOf - "./${manifest_static_path_1}" > manifest_static_1.xml
++dpkg --fsys-tarfile "$deb_pkg_file_path_2" | tar xOf - "./${manifest_static_path_2}" > manifest_static_2.xml
++for manifest in manifest_static_1.xml manifest_static_2.xml; do
++    if [ ! -s "$manifest" ]; then
++        echo "ERROR: ${manifest} could not be extracted from the build-metadata package, aborting!" >&2
++        exit 1
++    fi
++    xmllint --noout "$manifest"
++done
++
++# ---------------------------------------------------------------------------
++# 2. Work out which projects can possibly differ
++# ---------------------------------------------------------------------------
++python3 "${script_dir}/manifest_project_delta.py" manifest_static_1.xml manifest_static_2.xml > "$delta_file"
++
++awk -F'\t' '$1 == "CHANGED" { print $3 }' "$delta_file" | sort -u > sync_paths.txt
++awk -F'\t' '$1 == "CHANGED" { print $4 }' "$delta_file" | sort -u > forall_paths.txt
++changed_count=$(wc -l < sync_paths.txt)
++
++echo "INFO: ${changed_count} project(s) of ${component_name} can differ between ${build_metadata_pkg_ver_1} and ${build_metadata_pkg_ver_2}."
++
++# The report header. The format of the first line is parsed by
++# system-diff-collect.sh and must not change.
++{
++    echo "Diff of ${component_name} ${build_metadata_pkg_ver_1} and ${build_metadata_pkg_ver_2}"
++    awk -F'\t' '$1 != "CHANGED" { printf "PROJECT-SET-CHANGE %s %s %s %s %s %s\n", $1, $2, $3, $4, $5, $6 }' "$delta_file"
++} > "$diff_file"
++
++# ---------------------------------------------------------------------------
++# 3. Set up the source tree and sync only what can differ
++# ---------------------------------------------------------------------------
++repo_init_args=(-u "git://review.ptc.sony.co.jp/${manifest_git}" -b "$manifest_branch")
++if [ -n "${REPO_MIRROR:-}" ] && [ -d "${REPO_MIRROR}" ]; then
++    repo_init_args+=("--reference=${REPO_MIRROR}")
++else
++    echo "WARNING: REPO_MIRROR is unset or missing; syncing without a local mirror reference." >&2
++fi
++
++repo init "${repo_init_args[@]}"
++cp manifest_static_1.xml manifest_static_2.xml .repo/manifests/.
+ repo init -m manifest_static_1.xml
+-repo sync
++
++if [ "$changed_count" -gt 0 ]; then
++    mapfile -t sync_paths < sync_paths.txt
++    repo sync -j"$sync_jobs" --no-clone-bundle "${sync_paths[@]}"
++else
++    echo "INFO: every project is pinned to the same revision in both labels; skipping repo sync."
++fi
++
+ repo init -m manifest_static_2.xml
+ 
+-echo "Diff of ${component_name} ${build_metadata_pkg_ver_1} and ${build_metadata_pkg_ver_2}" > "result-dir/${component_name}_diff.txt"
+-(
+-    cd .repo/manifests
+-    manifest_diff=$(git diff $manifest_static_revision_1..$manifest_static_revision_2 2>&1)
+-    if [ -n "$manifest_diff" ]; then
+-        echo "project .repo/manifests/" | tee -a "$WORKSPACE/result-dir/${component_name}_diff.txt"
+-        echo "$manifest_diff" | tee -a "$WORKSPACE/result-dir/${component_name}_diff.txt"
+-        echo "" | tee -a "$WORKSPACE/result-dir/${component_name}_diff.txt"
++# ---------------------------------------------------------------------------
++# 4. Diff of the manifest git itself (metadata, not source code)
++# ---------------------------------------------------------------------------
++if [ "$include_manifest_git_diff" = "1" ]; then
++    (
++        cd .repo/manifests
++
++        for revision in "$manifest_static_revision_1" "$manifest_static_revision_2"; do
++            if ! git cat-file -e "${revision}^{commit}" 2>/dev/null; then
++                git fetch -q origin "+refs/heads/*:refs/remotes/origin/*"
++                break
++            fi
++        done
++
++        for revision in "$manifest_static_revision_1" "$manifest_static_revision_2"; do
++            if ! git cat-file -e "${revision}^{commit}" 2>/dev/null; then
++                echo "ERROR: manifest revision ${revision} is not available in ${manifest_git}, aborting!" >&2
++                exit 1
++            fi
++        done
++
++        git diff "${manifest_static_revision_1}..${manifest_static_revision_2}" > "$workspace/manifest_git_diff.txt"
++    )
++
++    if [ -s "$workspace/manifest_git_diff.txt" ]; then
++        {
++            echo "project .repo/manifests/"
++            cat "$workspace/manifest_git_diff.txt"
++            echo ""
++        } >> "$diff_file"
+     fi
+-)
+-repo forall -cvp 'git diff HEAD..$REPO_RREV' 2>&1 | tee -a "result-dir/${component_name}_diff.txt"
+-
+-if [ -n "$EXCLUDE_PROJECTS" ]; then
+-    cp "result-dir/${component_name}_diff.txt" "result-dir/${component_name}_diff_excluded.txt"
+-    for exclude_project in $EXCLUDE_PROJECTS; do
+-        if [[ "$exclude_project" =~ platform/(qssi|target|system|amss)manifest ]]; then
+-            exclude_path=".repo/manifests"
+-        else
+-            exclude_path=$(xmllint --xpath "string(//manifest/project[@name=\"$exclude_project\"]/@path)" manifest_static_1.xml)
+-        fi
+-        start_pattern="^project $(echo "$exclude_path" | sed 's/\//\\\//g')\/$"
+-        end_pattern="^$"
+-        sed -i "/${start_pattern}/,/${end_pattern}/d" "result-dir/${component_name}_diff_excluded.txt"
+-    done
+ fi
+-# echo "git log of ${component_name} ${build_metadata_pkg_ver_1}, ${build_metadata_pkg_ver_2}" > "result-dir/${component_name}_gitlog.txt"
+-# repo forall -cvp 'git log --graph --decorate --pretty=oneline --abbrev-commit HEAD..$REPO_RREV' 2>&1 | tee -a "result-dir/${component_name}_gitlog.txt"
++
++# ---------------------------------------------------------------------------
++# 5. The actual source code diff
++# ---------------------------------------------------------------------------
++: > "$error_file"
++
++if [ "$changed_count" -gt 0 ]; then
++    mapfile -t forall_paths < forall_paths.txt
++
++    # stdout and stderr are kept apart on purpose. They used to be merged into
++    # the report, where a "fatal: bad revision" is dropped by the HTML
++    # generator and the project silently looks unchanged.
++    set +e
++    repo forall "${forall_paths[@]}" -p -c \
++        'git cat-file -e "${REPO_RREV}^{commit}" 2>/dev/null || git fetch -q origin; git diff "HEAD..${REPO_RREV}"' \
++        >> "$diff_file" 2> "$error_file"
++    forall_rc=$?
++    set -e
++
++    if [ "$forall_rc" -ne 0 ] || { [ "$strict_diff_errors" = "1" ] && [ -s "$error_file" ]; }; then
++        echo "ERROR: 'repo forall' reported problems for ${component_name}; the diff cannot be trusted:" >&2
++        cat "$error_file" >&2
++        exit 1
++    fi
++
++    if [ "$include_git_log" = "1" ]; then
++        {
++            echo "Commits of ${component_name} ${build_metadata_pkg_ver_1} and ${build_metadata_pkg_ver_2}"
++            echo "left side = only in ${build_metadata_pkg_ver_1}, right side = only in ${build_metadata_pkg_ver_2}"
++            echo ""
++        } > "$gitlog_file"
++        repo forall "${forall_paths[@]}" -p -c \
++            'git log --left-right --cherry-pick --oneline "HEAD...${REPO_RREV}"' >> "$gitlog_file" 2>/dev/null || true
++    fi
++fi
++
++# ---------------------------------------------------------------------------
++# 6. Second report with the uninteresting projects removed
++# ---------------------------------------------------------------------------
++# The excluded report is always produced, also when EXCLUDE_PROJECTS is empty,
++# so that system-diff-collect.sh always has a complete set of inputs.
++cp "$diff_file" "$excluded_file"
++
++sed_escape() {  # <string>
++    printf '%s' "$1" | sed 's/[][\\.*^$\/]/\\&/g'
++}
++
++for exclude_project in ${EXCLUDE_PROJECTS:-}; do
++    if [ "$exclude_project" = ".repo/manifests" ] || \
++       [ "$exclude_project" = "$manifest_git" ] || \
++       [[ "$exclude_project" =~ ^platform/(qssi|target|system|amss)manifest$ ]]; then
++        exclude_path=".repo/manifests"
++    else
++        exclude_path=$(xmllint --xpath "string(//manifest/project[@name=\"${exclude_project}\"]/@path)" manifest_static_1.xml 2>/dev/null || true)
++        if [ -z "$exclude_path" ]; then
++            exclude_path=$(xmllint --xpath "string(//manifest/project[@name=\"${exclude_project}\"]/@path)" manifest_static_2.xml 2>/dev/null || true)
++        fi
++    fi
++
++    if [ -z "$exclude_path" ]; then
++        # This used to produce the pattern "^project /$", which quietly matches
++        # nothing, so a typo in EXCLUDE_PROJECTS went unnoticed.
++        echo "WARNING: '${exclude_project}' is not part of ${component_name}; nothing excluded for it." >&2
++        continue
++    fi
++
++    start_pattern="^project $(sed_escape "$exclude_path")\\/$"
++    end_pattern='^$'
++    sed -i "/${start_pattern}/,/${end_pattern}/d" "$excluded_file"
++    sed -i "/^PROJECT-SET-CHANGE [A-Z]* $(sed_escape "$exclude_project") /d" "$excluded_file"
++done
+diff --git a/hudson-scripts/system-diff.sh b/hudson-scripts/system-diff.sh
+index e39f7b7..f4c7a84 100644
+--- a/hudson-scripts/system-diff.sh
++++ b/hudson-scripts/system-diff.sh
+@@ -1,48 +1,86 @@
+ #!/bin/bash -ex
++#
++# Step 1 of the system_diff job: work out which components the two system
++# labels are built from and hand one axis value per component to the
++# system_diff_matrix job.
++#
++# Input  (environment): SYSTEM_LABEL_1, SYSTEM_LABEL_2, PROPERTIES_FILE
++# Output (file):        $PROPERTIES_FILE with SYSTEM_DIFF_MATRIX_INPUT=...
++#
++set -o pipefail
+ 
+ if [ -z "$SYSTEM_LABEL_1" ] || [ -z "$SYSTEM_LABEL_2" ]; then
+-    echo "ERROR: Two system labels must be provided, aborting!"
++    echo "ERROR: Two system labels must be provided, aborting!" >&2
+     exit 1
+ fi
+ 
+ if [ "$SYSTEM_LABEL_1" = "$SYSTEM_LABEL_2" ]; then
+-    echo "ERROR: Provided labels are the same, aborting!"
++    echo "ERROR: Provided labels are the same, aborting!" >&2
+     exit 1
+ fi
+ 
+-build_metadata_pkgs_1=$(repository list $SYSTEM_LABEL_1 -g build-metadata -xml)
+-ret_val=$?
+-if [ $ret_val -ne 0 ]; then
+-    echo "ERROR: Provided label ${SYSTEM_LABEL_1} is not a system label, aborting!"
++if ! build_metadata_pkgs_1=$(repository list "$SYSTEM_LABEL_1" -g build-metadata -xml); then
++    echo "ERROR: Provided label ${SYSTEM_LABEL_1} is not a system label, aborting!" >&2
+     exit 1
+ fi
+ 
+-build_metadata_pkgs_2=$(repository list $SYSTEM_LABEL_2 -g build-metadata -xml)
+-ret_val=$?
+-if [ $ret_val -ne 0 ]; then
+-    echo "ERROR: Provided label ${SYSTEM_LABEL_2} is not a system label, aborting!"
++if ! build_metadata_pkgs_2=$(repository list "$SYSTEM_LABEL_2" -g build-metadata -xml); then
++    echo "ERROR: Provided label ${SYSTEM_LABEL_2} is not a system label, aborting!" >&2
+     exit 1
+ fi
+ 
+ pkgs_count_1=$(xmllint --xpath "count(//package)" - <<<"$build_metadata_pkgs_1")
+ pkgs_count_2=$(xmllint --xpath "count(//package)" - <<<"$build_metadata_pkgs_2")
+ if [ "$pkgs_count_1" -ne "$pkgs_count_2" ]; then
+-    echo "ERROR: Provided labels are incompatible (number of contained metadata packages differ), aborting!"
++    echo "ERROR: Provided labels are incompatible (number of contained metadata packages differ), aborting!" >&2
++    exit 1
++fi
++
++if [ "$pkgs_count_1" -eq 0 ]; then
++    echo "ERROR: ${SYSTEM_LABEL_1} contains no build-metadata packages, aborting!" >&2
++    exit 1
++fi
++
++# Print the name of every build-metadata package of a label listing.
++package_names() {  # <package-listing-xml> <package-count>
++    local listing="$1" count="$2" i
++    for ((i = 1; i <= count; i++)); do
++        xmllint --xpath "string(//packages/package[$i]/@name)" - <<<"$listing"
++        echo
++    done
++}
++
++# Comparing only the number of packages is not enough: two labels can contain
++# the same number of differently named components, in which case the lookup of
++# the second version silently returns an empty string and the matrix job dies
++# on 'repository getpackage <name> ""'.
++pkg_names_1=$(package_names "$build_metadata_pkgs_1" "$pkgs_count_1" | sort)
++pkg_names_2=$(package_names "$build_metadata_pkgs_2" "$pkgs_count_2" | sort)
++if [ "$pkg_names_1" != "$pkg_names_2" ]; then
++    echo "ERROR: Provided labels are incompatible (different components), aborting!" >&2
++    echo "Components of ${SYSTEM_LABEL_1} vs ${SYSTEM_LABEL_2}:" >&2
++    diff <(echo "$pkg_names_1") <(echo "$pkg_names_2") >&2 || true
+     exit 1
+ fi
+ 
+ # Update job description
+-system_manifest_branch_1=$(repository labelmetadata $SYSTEM_LABEL_1 | grep XB-SEMC-Manifest-Branch: | cut -d ':' -f2 | tr -d ' ')
+-system_manifest_branch_2=$(repository labelmetadata $SYSTEM_LABEL_2 | grep XB-SEMC-Manifest-Branch: | cut -d ':' -f2 | tr -d ' ')
++system_manifest_branch_1=$(repository labelmetadata "$SYSTEM_LABEL_1" | grep XB-SEMC-Manifest-Branch: | cut -d ':' -f2 | tr -d ' ')
++system_manifest_branch_2=$(repository labelmetadata "$SYSTEM_LABEL_2" | grep XB-SEMC-Manifest-Branch: | cut -d ':' -f2 | tr -d ' ')
+ job_description="Diff between ${SYSTEM_LABEL_1} (${system_manifest_branch_1}) and ${SYSTEM_LABEL_2} (${system_manifest_branch_2})"
+ curl -s "${BUILD_URL}submitDescription" --data-urlencode "description=${job_description}"
+ 
+ # Get input for matrix job
+ SYSTEM_DIFF_MATRIX_INPUT=""
+-for i in $(seq 1 $pkgs_count_1); do
++for i in $(seq 1 "$pkgs_count_1"); do
+     build_metadata_pkg_name=$(xmllint --xpath "string(//packages/package[$i]/@name)" - <<<"$build_metadata_pkgs_1")
+     build_metadata_pkg_ver_1=$(xmllint --xpath "string(//packages/package[$i]/@version)" - <<<"$build_metadata_pkgs_1")
+     build_metadata_pkg_ver_2=$(xmllint --xpath "string(//packages/package[@name=\"$build_metadata_pkg_name\"]/@version)" - <<<"$build_metadata_pkgs_2")
++
++    if [ -z "$build_metadata_pkg_ver_1" ] || [ -z "$build_metadata_pkg_ver_2" ]; then
++        echo "ERROR: Could not resolve both versions of ${build_metadata_pkg_name}, aborting!" >&2
++        exit 1
++    fi
++
+     SYSTEM_DIFF_MATRIX_INPUT+="${build_metadata_pkg_name}|${build_metadata_pkg_ver_1}|${build_metadata_pkg_ver_2} "
+ done
+-echo "SYSTEM_DIFF_MATRIX_INPUT=${SYSTEM_DIFF_MATRIX_INPUT}" > ${PROPERTIES_FILE}
+\ No newline at end of file
++echo "SYSTEM_DIFF_MATRIX_INPUT=${SYSTEM_DIFF_MATRIX_INPUT}" > "${PROPERTIES_FILE}"
