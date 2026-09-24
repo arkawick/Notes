@@ -1,0 +1,11 @@
+{# Shim for the base template the real `generic-pages` package ships.          #}
+{#                                                                            #}
+{# cmweb-project/templates/generic_pages/page.html extends                    #}
+{# "generic_pages/base.html", which lives in the installed package rather than #}
+{# in the repository -- so it is missing locally and every generic page        #}
+{# (including "/" and /vendors/) fails with TemplateDoesNotExist.              #}
+{#                                                                            #}
+{# The real one is a thin bridge onto the site chrome, which is all page.html  #}
+{# needs from it: page.html overrides title, content, sidebar and the body_*   #}
+{# hooks, and those blocks are all defined by cmweb-project/templates/base.html #}
+{% extends "base.html" %}

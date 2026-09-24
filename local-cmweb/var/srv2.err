@@ -1,0 +1,6 @@
+C:\Users\Arkajyoti\Downloads\web\local-cmweb\.venv\Lib\site-packages\django\db\backends\utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+[01/Sep/2026 00:46:48] "GET / HTTP/1.1" 200 24165
+[01/Sep/2026 00:46:48] "GET /builds/ HTTP/1.1" 200 26623
+[01/Sep/2026 00:46:49] "GET /commits/ HTTP/1.1" 200 28106
+[01/Sep/2026 00:46:49] "GET /admin/ HTTP/1.1" 200 62193

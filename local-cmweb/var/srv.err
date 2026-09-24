@@ -1,0 +1,11 @@
+C:\Users\Arkajyoti\Downloads\web\local-cmweb\.venv\Lib\site-packages\django\db\backends\utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+Traceback (most recent call last):
+  File "C:\Users\Arkajyoti\AppData\Local\Programs\Python\Python312\Lib\wsgiref\handlers.py", line 137, in run
+    self.result = application(self.environ, self.start_response)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Arkajyoti\Downloads\web\local-cmweb\.venv\Lib\site-packages\django\contrib\staticfiles\handlers.py", line 80, in __call__
+    return self.application(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: get_wsgi_application() takes 0 positional arguments but 2 were given
+[01/Sep/2026 00:42:56] "GET /builds/ HTTP/1.1" 500 59
