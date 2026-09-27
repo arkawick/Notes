@@ -9,9 +9,11 @@ Android platform build metadata out of Gerrit, git and repo manifests — reposi
 builds ("labels"), commits, JIRA issues — and layers workflow automation (branch/repo requests,
 cherry-picking, rebasing, vendor release sync) on top.
 
-Fuller documentation lives in `README.md` and `docs/` — [architecture](docs/architecture.md),
-[development](docs/development.md), [infrastructure](docs/infrastructure.md). This file is the
-short form.
+Fuller documentation lives in `README.md` and `docs/` — [how the site works](docs/how-the-site-works.md)
+(end to end: one request from browser to PostgreSQL, and how the server is built),
+[architecture](docs/architecture.md), [development](docs/development.md),
+[infrastructure](docs/infrastructure.md), and [internals](docs/internals.md) (eight deep-dive guides).
+This file is the short form.
 
 ## Repository layout
 
@@ -98,6 +100,14 @@ In production these commands are **not** cron jobs but Jenkins jobs defined in
 `cmweb-scripts/jobs_on_cloud/*.yaml` (e.g. `index_labels` runs hourly 08–20). Adding a scheduled indexing
 command means adding a YAML there; `make update` on the `deploy_jenkins_jobs` job pushes them.
 
+A Jenkins job is not calling a service: it rebuilds the whole app. The shared builders in
+`jobs_on_cloud/macros.yaml` do a fresh `repo sync`, mount the EFS git mirror, write their own `secure.py`
+and `settings_management.py`, `make install` a virtualenv, and run `manage.py <cmd>` against the **same
+RDS instance the web servers read**. Indexing bugs therefore surface as production data problems, not as
+failed requests. `cmweb-scripts/bin/run_commands.sh` is a standalone near-duplicate of those builders,
+still used by `index_jenkins_job` alone; the ~20 scheduled jobs use the macros, so a change to one path
+does not reach the other.
+
 ### Runtime configuration
 
 Site behaviour is tuned at runtime through `base.models.Parameter` (a cached key/value table editable in
@@ -108,12 +118,26 @@ attached to any object, used by `PropertyCacheMixin` to memoize id lists.
 
 ### Access control
 
-`cmweb.middleware.PermissionCheckMiddleware` gates the whole site on the `users.view_all_pages`
+The site is gated **twice**, and both gates must be opened to expose an endpoint.
+
+Apache authenticates every request against LDAP before Django sees it (HTTP Basic against
+`ldaps://LDAP.jp.sony.com:3269`, `Require valid-user`, 401 rewritten to a `/register` redirect); the
+vhost grants anonymous access to exactly four paths — `/rpc/`, `/register`, `/access-denied` and
+favicons. Django's `RemoteUserMiddleware` then turns Apache's `REMOTE_USER` into a logged-in user via
+`users.auth.RemoteLDAPBackend`; direct logins use `users.auth.AuthLDAPBackend`.
+
+`cmweb.middleware.PermissionCheckMiddleware` is the second gate, on the `users.view_all_pages`
 permission, redirecting everyone else to the branch-request list. Anonymous access is only possible for
 paths matching `NO_AUTH_URLS` (RSS/XML feeds, `rpc/`, `api/` but not `api/a/`, `register`,
-`access-denied`) or under `EXEMPT_URLS` (`accounts/`, `request/`). Authentication is LDAP
-(`users.auth.AuthLDAPBackend`) plus Kerberos `RemoteUserMiddleware`. A new public endpoint needs a
-middleware entry, not just a URL.
+`access-denied`) or under `EXEMPT_URLS` (`accounts/`, `request/`).
+
+**A new public endpoint needs three edits: the URLconf, `NO_AUTH_URLS`, and a `Require all granted`
+block in `cmweb-scripts/ansible/roles/apache-server/templates/apache/cmweb.conf.j2`.** A 401 means the
+Apache block is missing; a redirect to `/access-denied` means `NO_AUTH_URLS` is.
+
+Note that `PermissionCheckMiddleware` base64-decodes the `Authorization` header and trusts the username
+**without checking the password** — safe only because Apache already bound it against LDAP. Do not put
+this app behind anything that does not authenticate.
 
 ### Views and URLs
 
@@ -150,9 +174,29 @@ Celery (`cmweb/celery.py`, `@shared_task` modules per app, `django_celery_result
 is wired up but **has no broker and no worker in any deployed environment**. `CELERY_TASK_ALWAYS_EAGER =
 True` is set in base `settings.py` and is never overridden by `settings_prod/stage/test.py`; no broker URL
 is configured anywhere, including the Ansible-rendered `secure.py`; no Ansible role installs or starts a
-worker; and `cmweb-scripts/bin/run_commands.sh` re-asserts eager mode for Jenkins runs. Every `.delay()`
+worker; and `cmweb-scripts/bin/run_commands.sh` re-asserts eager mode for the one job that uses it.
+Every `.delay()`
 therefore runs inline and synchronously in the calling thread — a slow task is a slow page, and there is
 no queue to inspect. `backend.tasks.json_result` serializes Django objects out of tasks, and
 `backend.UserTaskRequest` tracks user-initiated jobs. Search is OpenSearch via `django-opensearch-dsl`
 `documents.py` files, with `OPENSEARCH_DSL_AUTOSYNC = False` — the index is refreshed by the
 `update_search_index` Jenkins job through `search.search_signals.CustomSignalProcessor`, not on save.
+
+### Deployment
+
+The web tier is an AMI, not a server you install onto. EC2 Image Builder bakes
+`cmweb-scripts/ansible/web-servers.yml` into an Ubuntu 20/22 image: the `provision-web` component reads
+the AWS account id off the instance metadata service to pick prod/stage/test, then runs
+`ansible-playbook -c local` (the machine configures itself — every inventory is `localhost`). Ansible
+`repo sync`s the code to `/srv/www/<host>/site`, renders `cmweb/secure.py` from the vault, symlinks
+`settings_deployed.py` → `settings_<env>.py`, and runs `make static`. The app reloads by **touching
+`site/cmweb/wsgi.py`**, notified only when `repo manifest -r` output actually changed.
+
+**The deploy does not run migrations.** `make db` is for local use; deployed environments migrate through
+the separate `migrate_db` Jenkins job, so shipping a schema change is two operations, not one.
+
+Apache serves `/static/` directly and runs 16 WSGI processes × 15 threads. Prod wraps the middleware
+stack in `UpdateCacheMiddleware` / `FetchFromCacheMiddleware` (10-minute page cache) and puts sessions in
+memcached — **flushing the cache logs every user out**. `cmweb/wsgi.py` wraps Django in Paste's
+`ErrorMiddleware` with `debug: True`, so unhandled exceptions render a full traceback in production
+regardless of Django's `DEBUG = False`.

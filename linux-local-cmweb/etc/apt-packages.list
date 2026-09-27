@@ -1,0 +1,29 @@
+# Debian/Ubuntu packages needed to build the Python dependencies on Linux.
+#
+# This is a trimmed version of cmweb-project/etc/apt-get-22.list. Dropped, and
+# why:
+#
+#   somc-c2d-repository   Sony-internal apt repository -- not reachable
+#   somc-virtualenv3      Sony-internal virtualenv wrapper -- setup.sh uses
+#                         python3 -m venv and touches the Makefile's stamp file
+#   libpq5 libpq-dev      PostgreSQL client -- the local database is SQLite
+#   unixodbc unixodbc-dev ODBC -- only the DMS client uses it, and that is a shim
+#   graphviz              only used by django-extensions' graph_models
+#   libgraphviz-dev       ditto (pygraphviz is not installed)
+#   memcached             the default CACHES backend in settings.py is LocMemCache
+#   python3-ldap          replaced by the no-op shims; see requirements-linux.txt
+#   libldap2-dev          ditto
+#   libsasl2-dev          ditto
+#
+# Add libldap2-dev and libsasl2-dev back if you uncomment python-ldap and
+# django-auth-ldap in requirements-linux.txt.
+
+python3-pip
+python3-venv
+python3-dev
+pkg-config
+libxml2-dev
+libxslt1-dev
+libcurl4-openssl-dev
+libssl-dev
+git

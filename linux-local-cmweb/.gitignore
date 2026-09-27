@@ -1,0 +1,12 @@
+# Everything setup.sh generates. Nothing here is committed.
+ENV/
+site/
+stubs
+cm_web_db
+static/
+repository/
+cache/
+var/
+test-results/
+__pycache__/
+*.pyc

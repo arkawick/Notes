@@ -1,0 +1,41 @@
+"""Local development values for the settings that secure.py must supply.
+
+``cmweb-project/cmweb/secure.py`` is gitignored and never committed: in
+production Ansible renders it from the vault, and on a Jenkins slave the job
+builders write it from bound credentials. It is nominally optional --
+``settings.py`` imports it inside a ``try/except`` -- but ``OPENSEARCH_HOST``
+and ``OPENSEARCH_AUTH_*`` are referenced unguarded a few lines later, so
+without this file settings fails with ``NameError: OPENSEARCH_HOST`` rather
+than anything readable.
+
+setup.sh copies this file to ``site/cmweb/secure.py``. It is imported by
+``from .secure import *`` at the very end of settings.py, so anything defined
+here wins over settings.py. Nothing here points at a real service; the values
+exist so that settings.py finishes importing.
+
+The database is deliberately not mentioned: the default ``DATABASES`` in
+settings.py is already SQLite at ``PATH_ROOT/cm_web_db``, which for this layout
+is ``linux-local-cmweb/cm_web_db``. The default ``CACHES`` is already
+LocMemCache, so memcached is not needed either.
+"""
+
+# OpenSearch. Referenced unconditionally by settings.py when it builds
+# OPENSEARCH_DSL. There is no cluster locally; OPENSEARCH_DSL_AUTOSYNC is
+# already False in settings.py, so nothing connects on save.
+OPENSEARCH_HOST = 'localhost'
+OPENSEARCH_AUTH_USERNAME = 'local'
+OPENSEARCH_AUTH_PASSWORD = 'local'
+
+# The service account used for Gerrit/JIRA/M+ calls. Empty locally -- every
+# code path that would use it goes through a shim and raises ShimNotAvailable.
+AUTH_DEFAULT_SERVICE_USERNAME = ''
+AUTH_DEFAULT_SERVICE_PASSWORD = ''
+
+# settings.py already sets DEBUG = True; repeated here so that it is visible
+# in the file you actually edit.
+DEBUG = True
+
+# settings.py defines no ALLOWED_HOSTS. Django's DEBUG fallback covers
+# localhost and 127.0.0.1 only, so this is what makes `runserver 0:8000`
+# reachable from another machine.
+ALLOWED_HOSTS = ['*']
