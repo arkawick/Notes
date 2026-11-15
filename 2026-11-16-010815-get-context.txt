@@ -1,0 +1,540 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   ~\Downloads\CMWEB\cmweb-scripts
+
+
+❯ get context                                                                   
+
+  Listed 3 directories (ctrl+o to expand)
+
+● I've loaded the project context. There are no saved memories from earlier
+  sessions.
+
+  What this is: CMWEB is Sony's internal Configuration Management web app, built
+  on Django 5.2. It indexes Android build metadata from Gerrit, git and repo
+  manifests: repositories, branches, builds (called "labels"), commits and JIRA
+  issues. On top of that it automates release workflows: branch and repo
+  requests, cherry-picks, rebases and vendor release sync.
+
+  What's in C:\Users\Arkajyoti\Downloads\CMWEB:
+  - cmweb-project/: the Django project (settings, URLs, WSGI, Makefile). It
+    expects cmweb-app at cmweb-project/apps/, but that link isn't there in this
+    tree.
+  - cmweb-app/: about 20 Django apps. The main ones are explorer, request,
+    harvest, rebase, issues, vendorsync, search and api.
+  - cmweb-scripts/: deployment and scheduling only (Ansible, CloudFormation,
+    Jenkins job definitions); no application code.
+  - docs/: written documentation, covering how the site works, architecture,
+    development, infrastructure, internals/ (8 guides), learning/ (9 Django
+    tutorials) and operations/ (7 guides).
+  - local-cmweb/: a Windows harness for running the site locally. It keeps its
+    own settings and stand-ins for Sony-internal packages in stubs/, so the
+    three source folders stay untouched. It runs on SQLite with the sample data
+    in explorer/fixtures/testdata.json (18 builds, 1,272 commits, 1,087 repos).
+  - linux-local-cmweb/: the same harness for Linux.
+  - Two .mhtml snapshots of the live site.
+
+  Local setup state: local-cmweb/var/cmweb_local.sqlite3 exists, along with
+  server logs, so setup has been run before. I didn't find a .venv in
+  local-cmweb, so you may need to run .\setup.ps1 again before .\run.ps1. The
+  site then runs at http://127.0.0.1:8000/ and logs you in automatically as
+  local/local.
+
+  Things that commonly go wrong:
+  - New branch not showing up: branches are only indexed if they match the
+    include/exclude regex rules.
+  - Data issues come from Jenkins: the indexing jobs write straight to the
+    production database, so indexing bugs show up as bad data, not failed
+    requests.
+  - Celery tasks are not queued: they run immediately inside the request, so a
+    slow task means a slow page.
+  - A new public endpoint needs three edits: the URLconf, NO_AUTH_URLS, and the
+    Apache config.
+  - Deploying doesn't run migrations: schema changes need the separate
+    migrate_db Jenkins job.
+  - secure.py is required: settings fail to load without it.
+  - Lint is strict: lines are limited to 80 columns, and every module, class and
+    method needs a docstring.
+
+  What would you like to work on?
+
+✻ Worked for 23s · done Sunday 11:07 PM
+
+※ recap: I loaded the CMWEB project context: the repo layout, the docs, and the local Windows setup, which has a database but no virtualenv. Next, tell me what you'd like to work on, and run `.\setup.ps1` if you want the site running locally. (disable recaps in /config)
+
+❯ c:\Users\Arkajyoti\Downloads\CMWEB\cmweb-scripts\jobs_on_cloud\index_pp_apps. 
+  yaml refer this jenkins job and its corresponding cmd C:\Users\Arkajyoti\Down 
+  loads\CMWEB\cmweb-app\product_packages\management\commands\index_pp_apps.py.  
+  i got a ticket:                                                               
+  Could you clarify what the output of the index_pp_apps job is intended to     
+  show?                                                                         
+  https://ci-tools.ptc.sony.co.jp/job/cmweb/job/index_pp_apps/                  
+  Based on                                                                      
+  CMWEB-3324: Show Installed application based on each PP in CMWEBClosed        
+   that is the original ticket of the job , this job was intended to generate a 
+  list of applications associated with a PP from builds created before the      
+  Ithaca build process was introduced.                                          
+  However, all builds have been migrated to Ithaca.                             
+  Therefore, I assume that this job no longer produces any meaningful output    
+  and effectively returns no results.                                           
+  Could you confirm whether index_pp_apps is still being used or if it can be   
+  considered obsolete?                                                          
+
+  Searched for 1 pattern, read 1 file, listed 1 directory, ran 2 shell commands (ctrl+o to expand)
+
+● Still tracing who reads the data the job writes; one more lookup, then the
+  answer.
+
+  Searched for 2 patterns, ran 2 shell commands (ctrl+o to expand)
+
+● I traced the job end to end. Nothing in the code proves the job is obsolete, 
+  but the reporter's assumption is very likely right, and two quick checks will 
+  confirm it.
+
+  What the job does
+
+  index_pp_apps.yaml runs manage.py index_pp_apps --jobs 1 every hour from 08:00
+  to 20:00. For each build ("label") in platform/systemmanifest created in the
+  last day that hasn't been indexed yet, the command does this
+  (product_packages/management/commands/index_pp_apps.py):
+
+  1. Asks C2D for the build's package list, and looks for a tools-imagetools*
+     package, which contains the aapt tool.
+  2. Finds the platform/vendor/semc/build/composition-config repo in the build,
+     clones it at the build's revision, and parses each variant_specs/pp-*.xml
+     file.
+  3. For every app-* package a PP depends on, downloads the .deb from C2D,
+     unpacks the .apk, and runs aapt dump badging to read the app's display
+     name.
+  4. Saves the results to the LabelProductPackages and ProductPackageApp tables.
+
+  What its "output" is
+
+  The console output is only logging. The useful result is database rows, which
+  are shown in two places:
+  - The "Apps" tab on a build page, /builds/<manifest>/<label>/+apps. The tab
+    comes from explorer/templates/explorer/label_tabs.html:73 and is filled by
+    label_apps_list in explorerutils.py:273. It shows a table of apps against
+    PPs.
+  - /product_packages/<label>/, which shows the same table.
+
+  Why it would now return nothing, without any error
+
+  Every step above needs something from the old build process: C2D package
+  metadata, a tools-imagetools package, the composition-config repo in the
+  build, and pp-*.xml files. If a build lacks any of them, the command skips it
+  with continue. The most likely failure point logs nothing at all: if there's
+  no tools-imagetools package, the build is skipped silently. So an Ithaca build
+  that lacks these would produce a green Jenkins run with an empty log and no
+  new rows. That matches what the reporter describes.
+
+  There's no mention of "Ithaca" anywhere in the three repos. I can't tell from
+  the code which of these things Ithaca builds still have, so this needs
+  checking against real data.
+
+  How to confirm
+
+  1. Check whether new rows are still being written. On prod, in the Django
+     shell (or in the admin at /admin/product_packages/labelproductpackages/):
+  from product_packages.models import LabelProductPackages as L
+  L.objects.order_by('-label__date_created').values_list('label__name',
+  'label__date_created')[:5]
+     If the newest build listed there is from around when Ithaca was introduced,
+     the job has been doing nothing since then.
+  2. Read a recent console log of index_pp_apps in Jenkins. If it shows only
+     setup output, with no already indexed or Composition gits not available
+     lines, that's the silent skip described above.
+
+  If it's confirmed obsolete
+
+  - Remove index_pp_apps from cmweb-scripts/jobs_on_cloud/generic_project.yaml
+    and delete index_pp_apps.yaml. Then run deploy_jenkins_jobs, or just disable
+    the job in Jenkins first.
+  - Keep the tables and the "Apps" tab. They still show valid historical data
+    for pre-Ithaca builds. Removing them is a separate cleanup: the cmweb-app
+    code plus a migration, which goes through the migrate_db job.
+
+  Suggested reply
+
+  ▎ index_pp_apps builds the "Apps" tab on build pages (/builds/<label>/+apps): 
+  ▎ for each new system-manifest build, it reads the pp-*.xml variant specs from
+  ▎ composition-config, downloads each app-* package from C2D, and pulls the 
+  ▎ app name out of the APK with aapt. It needs the build's C2D package 
+  ▎ metadata, a tools-imagetools package and composition-config in the build. 
+  ▎ When those are missing it skips the build without logging anything, which 
+  ▎ explains the empty runs on Ithaca builds. The latest build with indexed apps
+  ▎ is <X> from <date>, which matches the Ithaca migration, so we consider the 
+  ▎ job obsolete. We'll remove the Jenkins job. Apps already indexed for older 
+  ▎ builds will stay visible.
+
+  Fill in <X> and <date> from check 1. I can prepare the cmweb-scripts change to
+  remove the job if you want.
+
+✻ Cogitated for 1m 5s · done 12:52 AM
+
+❯ Started by timer                                                              
+  Running as SYSTEM                                                             
+  [EnvInject] - Loading node environment variables.                             
+  [EnvInject] - Preparing an environment for the build.                         
+  [EnvInject] - Keeping Jenkins system variables.                               
+  [EnvInject] - Keeping Jenkins build variables.                                
+  [EnvInject] - Injecting as environment variables the properties content       
+  http_proxy=http://proxy-sen.noc.sony.co.jp:10080                              
+  no_proxy=ptc.sony.co.jp,amazonaws.com                                         
+  https_proxy=http://proxy-sen.noc.sony.co.jp:10080                             
+  SCRIPT_BRANCH=cloudj2                                                         
+  APP_BRANCH=cloudj2                                                            
+                                                                                
+  [EnvInject] - Variables injected successfully.                                
+  [EnvInject] - Injecting contributions.                                        
+  Building remotely on EC2 (AWSJ2) - ci-tools_CMWEB_SLAVE_22                    
+  (i-0ce6c32f9c7e636c1) (CMWEB_SLAVE_22) in workspace                           
+  /home/hudsonslave/workspace/cmweb/index_pp_apps                               
+  [WS-CLEANUP] Deleting project workspace...                                    
+  [WS-CLEANUP] Deferred wipeout is used...                                      
+  [WS-CLEANUP] Done                                                             
+  [index_pp_apps] $ /bin/bash -ex /tmp/jenkins10847841146423378251.sh           
+  + echo '++++++++++ setup env ++++++++++'                                      
+  ++++++++++ setup env ++++++++++                                               
+  + folder_name=****                                                            
+  ++ echo ****                                                                  
+  ++ sed -e s#/#/job/#                                                          
+  + folder_url=https://ci-tools.ptc.sony.co.jp/job/****/                        
+  + prop_file=/home/hudsonslave/workspace/****/index_pp_apps/.env.prop          
+  + echo '# Environment'                                                        
+  + echo FOLDER_NAME=****                                                       
+  + echo FOLDER_URL=https://ci-tools.ptc.sony.co.jp/job/****/                   
+  [EnvInject] - Injecting environment variables from a build step.              
+  [EnvInject] - Injecting as environment variables the properties file path     
+  '/home/hudsonslave/workspace/****/index_pp_apps/.env.prop'                    
+  [EnvInject] - Variables injected successfully.                                
+  [index_pp_apps] $ /bin/bash -ex /tmp/jenkins11703302990690345743.sh           
+  + echo '++++++++++ setup git ++++++++++'                                      
+  ++++++++++ setup git ++++++++++                                               
+  + somc-setup-review -f -p ptc -i ****                                         
+  Home: /home/hudsonslave                                                       
+  Profile: ptc                                                                  
+  Update .gitconfig ...                                                         
+  Update SSH config ...                                                         
+  Done.                                                                         
+  + rm -f /home/hudsonslave/.ssh/id_ed25519                                     
+  + cp -f **** /home/hudsonslave/.ssh/id_ed25519                                
+  + chmod 0400 /home/hudsonslave/.ssh/id_ed25519                                
+  + '[' -e /home/hudsonslave/.netrc ']'                                         
+  [index_pp_apps] $ /bin/bash -ex /tmp/jenkins178533736768473615.sh             
+  + echo '++++++++++ mount efs ++++++++++'                                      
+  ++++++++++ mount efs ++++++++++                                               
+  + sudo mkdir -p /mnt/nfs                                                      
+  + '[' prod = prod ']'                                                         
+  + sudo mount -t efs fs-a18f0c81:/ /mnt/nfs                                    
+  + ln -s /mnt/nfs/repo-mirror_20/                                              
+  /home/hudsonslave/workspace/****/index_pp_apps/repository                     
+  + ls -la /home/hudsonslave/workspace/****/index_pp_apps/repository/           
+  total 620                                                                     
+  drwxrwsr-x  74 hudsonslave hudsonslave   6144 Aug 17 06:46 .                  
+  drwxrwsr-x   7        2222        1111   6144 Jul  2 15:17 ..                 
+  drwxrwsr-x   3 hudsonslave hudsonsla                                          
+  ──── (511 lines hidden) ───────────────────────────────────────────────────── 
+   -> 26.3                                                                      
+  [notice] To update, run:                                                      
+  /home/hudsonslave/workspace/****/index_pp_apps/.virtualenv/bin/python -m pip  
+  install --upgrade pip                                                         
+  + . ../.virtualenv/bin/activate                                               
+  ++ '[' ../.virtualenv/bin/activate = /tmp/jenkins7504167485379764649.sh ']'   
+  ++ deactivate nondestructive                                                  
+  ++ unset -f pydoc                                                             
+  ++ '[' -z '' ']'                                                              
+  ++ '[' -z '' ']'                                                              
+  ++ '[' -z '' ']'                                                              
+  ++ '[' -z '' ']'                                                              
+  ++ hash -r                                                                    
+  ++ '[' -z '' ']'                                                              
+  ++ unset VIRTUAL_ENV                                                          
+  ++ unset VIRTUAL_ENV_PROMPT                                                   
+  ++ '[' '!' nondestructive = nondestructive ']'                                
+  ++ '[' '!' -d /home/hudsonslave/workspace/****/index_pp_apps/.virtualenv ']'  
+  ++ VIRTUAL_ENV=/home/hudsonslave/workspace/****/index_pp_apps/.virtualenv     
+  ++ '[' linux-gnu = cygwin ']'                                                 
+  ++ '[' linux-gnu = msys ']'                                                   
+  ++ export VIRTUAL_ENV                                                         
+  ++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin: 
+  /bin:/usr/games:/usr/local/games:/snap/bin                                    
+  ++ PATH=/home/hudsonslave/workspace/****/index_pp_apps/.virtualenv/bin:/usr/l 
+  ocal/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/ 
+  games:/snap/bin                                                               
+  ++ export PATH                                                                
+  ++ '[' x '!=' x ']'                                                           
+  +++ basename /home/hudsonslave/workspace/****/index_pp_apps/.virtualenv       
+  ++ VIRTUAL_ENV_PROMPT=.virtualenv                                             
+  ++ export VIRTUAL_ENV_PROMPT                                                  
+  ++ '[' -z '' ']'                                                              
+  ++ '[' '' '!=' '' ']'                                                         
+  ++ '[' '' '!=' '' ']'                                                         
+  ++ '[' -z '' ']'                                                              
+  ++ _OLD_VIRTUAL_PS1=                                                          
+  ++ PS1='(.virtualenv) '                                                       
+  ++ export PS1                                                                 
+  ++ alias pydoc                                                                
+  ++ true                                                                       
+  ++ hash -r                                                                    
+  + rm -f failed_commands                                                       
+  + touch failed_commands                                                       
+  + echo index_pp_apps --jobs 1                                                 
+  + tr ';' '\n'                                                                 
+  + read line                                                                   
+  + echo '---- Executing index_pp_apps --jobs 1'                                
+  ---- Executing index_pp_apps --jobs 1                                         
+  + ./manage.py index_pp_apps --jobs 1 -v3 --traceback                          
+  /home/hudsonslave/workspace/****/index_pp_apps/.virtualenv/lib/python3.10/sit 
+  e-packages/coreapi/utils.py:5: UserWarning: pkg_resources is deprecated as an 
+  API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The         
+  pkg_resources package is slated for removal as early as 2025-11-30. Refrain   
+  from using this package or pin to Setuptools<81.                              
+    import pkg_resources                                                        
+  2026-11-13 09:54:14,480 [ERROR] index_pp_apps: Composition gits not           
+  available: ManifestComponent matching query does not exist.                   
+  2026-11-13 09:54:20,045 [ERROR] index_pp_apps: Composition gits not           
+  available: ManifestComponent matching query does not exist.                   
+  2026-11-13 09:54:48,376 [ERROR] index_pp_apps: Composition gits not           
+  available: ManifestComponent matching query does not exist.                   
+  + read line                                                                   
+  + echo '---- failed_commands: '                                               
+  ---- failed_commands:                                                         
+  + cat failed_commands                                                         
+  ++ wc -l                                                                      
+  + exit 0                                                                      
+  Finished: SUCCESS                                                             
+  this is the current console output                                            
+
+● This log confirms the job is doing nothing useful.
+
+  What the log shows
+
+  The only output from the command itself is three lines:
+
+  [ERROR] index_pp_apps: Composition gits not available: ManifestComponent 
+  matching query does not exist.
+
+  Three builds were in scope, and all three were skipped at the same point. The
+  command never got as far as reading app lists, so nothing was written to the
+  database.
+
+  For each of those builds, the command did find the C2D package list and the
+  tools-imagetools package. It then failed at the next step: label.components.ge
+  t(project__name='platform/vendor/semc/build/composition-config') found
+  nothing. These builds don't include composition-config, which is the repo 
+  holding the pp-*.xml files that define each PP's app list. Without it the job
+  has no source for the data it's meant to produce.
+
+  Other points from the log:
+
+  - The green build is misleading. The except ObjectDoesNotExist branch logs the
+    error and moves on, so failed_commands stays empty, the script exits 0, and
+    Jenkins reports Finished: SUCCESS. Nobody has been alerted.
+  - The same failure repeats all day. The job runs hourly from 08:00 to 20:00
+    and looks back one day. A build that fails is never marked as indexed, so
+    these three builds fail again on every run.
+  - It still costs resources. Each run does a full repo sync, a fresh virtualenv
+    install, and downloads tools-imagetools from C2D for each build, all for
+    zero output.
+  - No already indexed lines appear. None of the builds in the window had been
+    indexed before, so the job hasn't produced data recently either.
+
+  One check before closing
+
+  This proves that current builds lack composition-config. It doesn't prove the
+  PP definitions weren't moved to another repo under Ithaca. Ask the reporter,
+  or someone on the Ithaca build team: "Are the per-PP app lists (pp-*.xml 
+  variant specs) still maintained anywhere in Ithaca builds?"
+
+  - If no: the job is obsolete. Remove it.
+  - If yes, in a different repo: the feature could be rewritten against the new
+    location. That's a new feature request, not this ticket.
+
+  You can also run the database check from my last message: the newest build
+  with rows in LabelProductPackages dates when the job last worked.
+
+  Suggested reply
+
+  ▎ The index_pp_apps job fills the "Apps" tab on build pages 
+  ▎ (/builds/<label>/+apps). It reads each PP's pp-*.xml from 
+  ▎ platform/vendor/semc/build/composition-config in the build, downloads each 
+  ▎ app-* package from C2D, and pulls the app name out of the APK.
+  ▎
+  ▎ The current console output shows that every build in scope fails with 
+  ▎ Composition gits not available: ManifestComponent matching query does not 
+  ▎ exist. Ithaca builds no longer include composition-config, so the job has 
+  ▎ nothing to read and writes no data. The job's error handling only logs the 
+  ▎ error, which is why it still reports SUCCESS.
+  ▎
+  ▎ So yes, the job is obsolete for Ithaca builds. We plan to remove the Jenkins
+  ▎ job. App lists already indexed for pre-Ithaca builds stay visible on their 
+  ▎ build pages. If the PP app definitions now live somewhere else in Ithaca and
+  ▎ this view is still wanted, please raise a separate request.
+
+  When you're ready, I can make the cmweb-scripts change: remove index_pp_apps
+  from generic_project.yaml and delete index_pp_apps.yaml.
+
+✻ Sautéed for 17s · done 12:55 AM
+
+❯ what to change                                                                
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Only cmweb-scripts needs to change; cmweb-app can stay as it is. There's also
+  one manual step in Jenkins that's easy to miss.
+
+  1. cmweb-scripts: two edits
+
+  These are the only references to the job anywhere in cmweb-scripts.
+
+  jobs_on_cloud/generic_project.yaml: delete line 26.
+         - index_latest_more
+  -      - index_pp_apps
+         - migrate_db
+
+  jobs_on_cloud/index_pp_apps.yaml: delete the file.
+
+  2. Jenkins: delete the job by hand
+
+  Merging the change will not remove the job from Jenkins. deploy_jenkins_jobs
+  runs jenkins-jobs update jobs_on_cloud/ without --delete-old, so it only
+  creates and updates jobs, never removes them. Without a manual step, the
+  existing job keeps running every hour.
+
+  1. Disable index_pp_apps in Jenkins now. It's harmless, and it stops the
+     hourly runs before the change merges.
+  2. Merge the cmweb-scripts change. deploy_jenkins_jobs triggers on merge, and
+     it should succeed.
+  3. Delete the index_pp_apps job in Jenkins.
+  4. Optionally, remove /mnt/nfs/cache/jenkins/index_pp_apps_cache on the EFS
+     share. The job empties and recreates it on every run, so it holds nothing
+     worth keeping.
+
+  3. cmweb-app: no change
+
+  Leave the index_pp_apps command, the product_packages tables, and the "Apps"
+  tab alone. They still serve app lists for pre-Ithaca builds, and they're
+  harmless with the job gone. Removing them would be a separate cleanup with its
+  own migration, run through the migrate_db job.
+
+  Commit message for cmweb-scripts
+
+  Remove obsolete index_pp_apps Jenkins job
+
+  index_pp_apps reads per-PP app lists from composition-config's
+  variant_specs/pp-*.xml. Ithaca builds no longer include
+  composition-config, so every build fails with "Composition gits not
+  available" and the job writes nothing, while still reporting SUCCESS.
+
+  Apps already indexed for pre-Ithaca builds stay visible on the
+  build "Apps" tab.
+
+  The job must also be deleted manually in Jenkins: deploy_jenkins_jobs
+  does not run jenkins-jobs with --delete-old.
+
+  I can make the two cmweb-scripts edits now if you want.
+
+✻ Baked for 17s · done 12:58 AM
+
+❯ give me the detailed reply                                                    
+
+● Here's a reply you can paste into the ticket:
+
+  ---
+
+  Hi,
+
+  Thanks for raising this. I checked the job definition, the management command
+  it runs, and the latest console output. Your assumption is correct: 
+  index_pp_apps no longer produces any output for current builds, and we 
+  consider it obsolete.
+
+  1. What the job was meant to do
+
+  index_pp_apps was added for CMWEB-3324 to show which applications are
+  installed in each Product Package (PP) of a build. It runs manage.py 
+  index_pp_apps --jobs 1 every hour between 08:00 and 20:00. Each run picks up
+  platform/systemmanifest builds created in the last 24 hours that haven't been
+  indexed yet. For each build it does the following:
+
+  1. Gets the build's package list from C2D and extracts the aapt tool from the
+     tools-imagetools package.
+  2. Finds platform/vendor/semc/build/composition-config in the build's
+     manifest, checks it out at the build's revision, and parses each PP
+     definition in variant_specs/pp-*.xml.
+  3. For every app-* package a PP depends on, downloads the .deb from C2D,
+     extracts the APK, and runs aapt dump badging to get the app's display name.
+  4. Stores the result in CMWEB's database.
+
+  The job doesn't produce a report. Its result appears in CMWEB as the "Apps" 
+  tab on a build page (/builds/<manifest>/<label>/+apps, also at
+  /product_packages/<label>/). That tab shows a table of app names against PPs,
+  with "Yes" where a PP contains the app.
+
+  2. What it does now
+
+  This is the output of the command in the latest run (2026-11-13):
+
+  [ERROR] index_pp_apps: Composition gits not available: ManifestComponent 
+  matching query does not exist.
+  [ERROR] index_pp_apps: Composition gits not available: ManifestComponent 
+  matching query does not exist.
+  [ERROR] index_pp_apps: Composition gits not available: ManifestComponent 
+  matching query does not exist.
+
+  Three builds were in scope, and all three were skipped at step 2. The builds
+  don't include composition-config in their manifest, and that repo is the only
+  place the job reads PP definitions from. Since the Ithaca migration, builds no
+  longer carry it, so the job has nothing to work from and writes no data.
+
+  3. Why Jenkins still shows SUCCESS
+
+  The command logs this error and moves on to the next build without returning a
+  failure. The job therefore exits 0 and reports Finished: SUCCESS even though
+  nothing was indexed. Builds that fail are never marked as done, so the same
+  builds are retried and fail again every hour for 24 hours. Each run also does
+  a full repo sync, a fresh virtualenv install and C2D package downloads, all
+  for no result.
+
+  4. Conclusion and next steps
+
+  The job is obsolete for Ithaca builds. We plan to:
+
+  - Disable index_pp_apps in Jenkins right away.
+  - Remove the job definition from cmweb-scripts
+    (jobs_on_cloud/index_pp_apps.yaml and its entry in generic_project.yaml),
+    then delete the job from Jenkins.
+
+  App lists that were already indexed for pre-Ithaca builds stay in CMWEB and
+  remain visible on those builds' "Apps" tab. No data is deleted. For new
+  builds, the "Apps" tab will be empty, as it already is today.
+
+  5. If the feature is still needed
+
+  If the per-PP app definitions still exist somewhere under Ithaca, for example
+  in a different repository or format, and the "Apps" view is still useful to
+  you, please raise a new request saying where that data lives now. The indexer
+  would need to be rewritten for the new source, so this would be new work
+  rather than a fix to this job.
+
+  Please let us know if you have any concerns. Otherwise we'll go ahead with the
+  removal.
+
+  Best regards,
+
+  ---
+
+  Before sending, you could run this check in the Django shell to find the last
+  build the job successfully indexed:
+
+  LabelProductPackages.objects.order_by('-label__date_created').values_list('lab
+  el__name', 'label__date_created')[:5]
+
+  The model is in product_packages.models. You can add the result to section 2,
+  for example: "The last build with indexed apps is <label> from <date>, which
+  matches the Ithaca migration."
+
+✻ Sautéed for 16s · done 1:01 AM
+
+※ recap: You're answering the ticket asking whether the index_pp_apps Jenkins job is obsolete, and the detailed reply confirming it is obsolete is drafted. Next, run the optional database check for the last indexed build, then post the reply. (disable recaps in /config)
